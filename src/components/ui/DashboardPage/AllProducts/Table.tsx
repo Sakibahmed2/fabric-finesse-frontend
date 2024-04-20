@@ -34,7 +34,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const DashboardTable = ({ product }: { product: TProduct[] }) => {
   return (
-    <Box my={5}>
+    <Box>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>

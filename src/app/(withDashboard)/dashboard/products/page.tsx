@@ -6,11 +6,7 @@ const DashboardAllProductPage = async () => {
   );
   const { data } = await res.json();
 
-  return (
-    <div>
-      <DashboardTable product={data} />
-    </div>
-  );
+  return <div> {/* <DashboardTable product={data} />{" "} */}</div>;
 };
 
 export default DashboardAllProductPage;
