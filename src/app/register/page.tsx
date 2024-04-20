@@ -11,6 +11,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRegisterUserMutation } from "@/redux/api/authApi";
+import { toast } from "sonner";
 
 export const userValidationSchema = z.object({
   name: z.string().min(1, "Please enter your name"),
@@ -28,9 +29,13 @@ const RegisterPage = () => {
   const [registerUser] = useRegisterUserMutation();
 
   const handleSubmit = async (values: FieldValues) => {
+    const toastId = toast.loading("Loading..");
     try {
-      const res = await registerUser(values);
+      const res: any = await registerUser(values);
       console.log(res);
+      if (res.data.success) {
+        toast.success(res.data.message, { id: toastId });
+      }
     } catch (err) {
       console.log(err);
     }

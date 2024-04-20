@@ -78,7 +78,12 @@ export default function Navbar() {
                 </Box>
               </Typography>
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                <Stack direction={"row"} gap={2}>
+                <Stack
+                  direction={"row"}
+                  gap={2}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
                   {/* Nav links  */}
                   <NavItems />
                 </Stack>
