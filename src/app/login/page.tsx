@@ -23,6 +23,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (values: FieldValues) => {
     const toastId = toast.loading("loading....");
+
     try {
       const res: any = await loginUser(values);
       if (res.data.success) {
