@@ -1,3 +1,5 @@
+"use client";
+
 import { ListItem, ListItemButton, ListItemText } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

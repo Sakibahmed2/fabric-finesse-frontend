@@ -1,10 +1,17 @@
+import { useState, useEffect } from "react";
 import { getUserInfo } from "@/services/authService";
 import { Box, Divider, List, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
 const Sidebar = () => {
-  const userInfo: any = getUserInfo();
+  const [userInfo, setUserInfo] = useState<any>(null);
+
+  useEffect(() => {
+    const userInfoData = getUserInfo();
+    setUserInfo(userInfoData);
+  }, []);
+
   const userRole = userInfo?.role;
 
   const ItemsLink = dynamic(() => import("./ItemsLink"), { ssr: false });
@@ -23,13 +30,13 @@ const Sidebar = () => {
       >
         <Typography variant="h5" component={"h1"}>
           <Box component="span" color="primary.main">
-            Fabric
+            {" "}
+            Fabric{" "}
           </Box>{" "}
           Finesse
         </Typography>
       </Stack>
       <Divider />
-
       <List>
         {userRole === "admin" ? (
           <>
