@@ -1,13 +1,24 @@
-import DashboardSidebar from "@/components/Dashboard/DashboardSidebar/DashboardSidebar";
-import { Metadata } from "next";
-import { ReactNode } from "react";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Fabric finesse | Dashboard",
-  description: "Welcome to Fabric Finesse cloth brand",
-};
+import DashboardSidebar from "@/components/Dashboard/DashboardSidebar/DashboardSidebar";
+import { getUserInfo } from "@/services/authService";
+import { useRouter } from "next/navigation";
+import { ReactNode, useEffect } from "react";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const redirectUser = async () => {
+      const user = getUserInfo();
+      if (!user) {
+        await router.push("/login");
+      }
+    };
+
+    redirectUser();
+  }, []);
+
   return (
     <>
       <DashboardSidebar>{children}</DashboardSidebar>

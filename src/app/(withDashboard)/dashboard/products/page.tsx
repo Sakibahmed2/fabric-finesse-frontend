@@ -7,15 +7,7 @@ import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CreateIcon from "@mui/icons-material/Create";
-
-// brand: "Levi's";
-// category: "men";
-// description: "A comfortable and stylish casual shirt for men.";
-// image: "https://fabrilife.com/image-gallery/638741f4d7304-square.jpg";
-// price: 29.99;
-// rating: 4.5;
-// title: "Men's Casual Shirt";
-// _id: "65fc117eb17aaf65c99e9b12";
+import Link from "next/link";
 
 const AllProductsPage = () => {
   const { data, isLoading } = useGetAllProductsQuery({});
@@ -101,7 +93,13 @@ const AllProductsPage = () => {
   return (
     <Box>
       <Box>
-        <Button startIcon={<CreateIcon />}>Create products</Button>
+        <Button
+          component={Link}
+          href="/dashboard/products/add-product"
+          startIcon={<CreateIcon />}
+        >
+          Create products
+        </Button>
       </Box>
 
       {/* Products table */}

@@ -1,11 +1,16 @@
 import ClothCard from "@/components/ui/ClothCard";
 import { TProduct } from "@/types/global";
-import { Box, Checkbox, Container, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Container,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 const ProductsPage = async () => {
-  const res = await fetch(
-    `https://style-sync-backend.vercel.app/api/v1/products`
-  );
+  const res = await fetch(`http://localhost:5000/api/v1/products`);
   const { data } = await res.json();
   return (
     <Box my={10}>

@@ -9,6 +9,8 @@ type TFormInputProps = {
   fullWidth?: boolean;
   sx?: SxProps;
   required?: boolean;
+  rows?: number;
+  multiline?: boolean;
 };
 
 const FFInput = ({
@@ -19,6 +21,8 @@ const FFInput = ({
   fullWidth,
   sx,
   required,
+  rows,
+  multiline,
 }: TFormInputProps) => {
   const { control } = useFormContext();
 
@@ -37,6 +41,8 @@ const FFInput = ({
           size={size}
           fullWidth={fullWidth}
           required={required}
+          rows={rows}
+          multiline={multiline}
           error={!!error?.message}
           helperText={error?.message}
         />

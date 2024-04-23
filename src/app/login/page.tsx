@@ -68,8 +68,12 @@ const LoginPage = () => {
               <Image src={storeIcon} height={60} width={60} alt="icon" />
             </Box>
             <Box>
-              <Typography variant="h4" component={"h2"}>
-                User login
+              <Typography variant="h5" component={"h2"} fontWeight={600}>
+                Login to your account
+              </Typography>
+              <Typography component={"p"} mt={1} fontSize={15}>
+                Enter your email and password below to login or create an
+                account
               </Typography>
             </Box>
           </Stack>
