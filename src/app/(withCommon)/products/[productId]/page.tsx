@@ -1,3 +1,4 @@
+import AddCartButton from "@/components/ui/AddCartButton/AddCartButton";
 import { TProduct } from "@/types/global";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -29,7 +30,8 @@ const SingleProductPage = async ({ params }: TProps) => {
   );
   const { data } = await res.json();
 
-  const { image, price, description, rating, title, salePrice, sale } = data;
+  const { _id, image, price, description, rating, title, salePrice, sale } =
+    data;
 
   return (
     <Box my={15}>
@@ -97,6 +99,13 @@ const SingleProductPage = async ({ params }: TProps) => {
                   <HomeRepairServiceIcon /> Delivers in: 3-7 Working Days
                   Shipping & Return
                 </Typography>
+
+                <AddCartButton
+                  _id={_id}
+                  price={price}
+                  salePrice={salePrice}
+                  title={title}
+                />
               </Box>
             </Stack>
           </Box>
