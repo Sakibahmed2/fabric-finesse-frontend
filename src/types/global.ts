@@ -1,5 +1,7 @@
 import { SvgIconTypeMap } from "@mui/material";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 export type TProduct = {
   _id?: string;
@@ -27,4 +29,20 @@ export type TSidebarItems = {
   parentPath?: string;
   icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string };
   child?: TSidebarItems[];
+};
+
+type TError = FetchBaseQueryError | SerializedError;
+
+type TResponseData = {
+  acknowledged: boolean;
+  insertedId: string;
+};
+
+export type TResponse = {
+  data?: {
+    data: TResponseData;
+    message: string;
+    success: boolean;
+  };
+  error?: TError;
 };

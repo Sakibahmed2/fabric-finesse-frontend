@@ -1,12 +1,28 @@
 "use client";
 
-import { Button } from "@mui/material";
+import { Button, SxProps } from "@mui/material";
 import React from "react";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useAppDispatch } from "@/redux/hooks";
-import { TCart, addToCart } from "@/redux/features/cartSlice";
+import { addToCart } from "@/redux/features/cartSlice";
 
-const AddCartButton = ({ _id, title, price, salePrice }: TCart) => {
+type TAddToCartButton = {
+  _id: string | undefined;
+  title: string;
+  price: number;
+  salePrice?: number | null;
+  fullWidthButton?: boolean;
+  sx?: SxProps;
+};
+
+const AddCartButton = ({
+  _id,
+  title,
+  price,
+  salePrice,
+  fullWidthButton = false,
+  sx,
+}: TAddToCartButton) => {
   const dispatch = useAppDispatch();
 
   const handleAddToCart = () => {
@@ -26,7 +42,9 @@ const AddCartButton = ({ _id, title, price, salePrice }: TCart) => {
       startIcon={<ShoppingCartIcon />}
       sx={{
         mt: 2,
+        ...sx,
       }}
+      fullWidth={fullWidthButton}
     >
       {" "}
       Add to cart

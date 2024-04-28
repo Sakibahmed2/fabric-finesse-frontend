@@ -19,7 +19,7 @@ const AuthButton = () => {
   return (
     <>
       {user?.userId ? (
-        <Button onClick={() => handleLogout()} color="warning">
+        <Button onClick={() => handleLogout()} color="error">
           Logout
         </Button>
       ) : (

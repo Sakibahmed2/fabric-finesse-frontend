@@ -1,4 +1,5 @@
 import AddCartButton from "@/components/ui/AddCartButton/AddCartButton";
+import ReviewSection from "@/components/ui/HomePage/ReviewSection/ReviewSection";
 import { TProduct } from "@/types/global";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -110,6 +111,9 @@ const SingleProductPage = async ({ params }: TProps) => {
             </Stack>
           </Box>
         </Stack>
+        <Box>
+          <ReviewSection productId={_id} />
+        </Box>
       </Container>
     </Box>
   );

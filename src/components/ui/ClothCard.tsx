@@ -5,6 +5,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Link from "next/link";
+import AddCartButton from "./AddCartButton/AddCartButton";
 
 const ClothCard = ({ product }: { product: TProduct }) => {
   return (
@@ -64,6 +65,15 @@ const ClothCard = ({ product }: { product: TProduct }) => {
             <AddShoppingCartIcon sx={{ fontSize: "20px" }} />
           </Typography>
         </Stack>
+        <Box>
+          <AddCartButton
+            _id={product._id}
+            title={product.title}
+            price={product.price}
+            salePrice={product.salePrice}
+            fullWidthButton
+          />
+        </Box>
       </Box>
     </Box>
   );

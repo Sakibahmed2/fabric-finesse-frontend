@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type TCart = {
-  _id: string;
+type TCart = {
+  _id: string | undefined;
   title: string;
   price: number;
-  salePrice: number;
+  salePrice?: number | null;
 };
 
 type TInitialState = {
