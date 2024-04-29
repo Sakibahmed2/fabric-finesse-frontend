@@ -13,9 +13,7 @@ type TProps = {
 };
 
 export const generateStaticParams = async () => {
-  const res = await fetch(
-    "https://style-sync-backend.vercel.app/api/v1/products"
-  );
+  const res = await fetch("http://localhost:5000/api/v1/products");
   const { data } = await res.json();
   return data.slice(0, 10).map((product: TProduct) => ({
     productId: product._id,
@@ -24,7 +22,7 @@ export const generateStaticParams = async () => {
 
 const SingleProductPage = async ({ params }: TProps) => {
   const res = await fetch(
-    `https://style-sync-backend.vercel.app/api/v1/products/${params.productId}`,
+    `http://localhost:5000/api/v1/products/${params.productId}`,
     {
       cache: "no-store",
     }

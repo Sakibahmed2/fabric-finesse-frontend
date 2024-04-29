@@ -9,7 +9,14 @@ export const reviewApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    getReviewByProductId: build.query({
+      query: (productId) => ({
+        url: `/reviews/${productId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useCreateReviewMutation } = reviewApi;
+export const { useCreateReviewMutation, useGetReviewByProductIdQuery } =
+  reviewApi;

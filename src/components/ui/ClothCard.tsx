@@ -9,11 +9,7 @@ import AddCartButton from "./AddCartButton/AddCartButton";
 
 const ClothCard = ({ product }: { product: TProduct }) => {
   return (
-    <Box
-      component={Link}
-      href={`/products/${product._id}`}
-      className="rounded-lg bg-white text-white shadow-secondary-1 dark:bg-surface-dark w-[280px] border-2 border-gray-500 p-2 mx-auto"
-    >
+    <Box className="rounded-lg bg-white text-white shadow-secondary-1 dark:bg-surface-dark w-[280px] border-2 border-gray-500 p-2 mx-auto">
       <Box position="relative">
         <Typography
           position="absolute"
@@ -31,16 +27,20 @@ const ClothCard = ({ product }: { product: TProduct }) => {
           Sale
         </Typography>
       </Box>
-      <Image
-        className="rounded-lg"
-        src={product.image}
-        width={300}
-        height={300}
-        alt="products"
-      />
+      <Box component={Link} href={`/products/${product._id}`}>
+        <Image
+          className="rounded-lg"
+          src={product.image}
+          width={300}
+          height={300}
+          alt="products"
+        />
+      </Box>
       <Box px={1} mt={1}>
         <Typography component="p" fontSize={20}>
-          {product.title}
+          {product.title.length > 20
+            ? product.title.substring(0, 20) + "..."
+            : product.title}
         </Typography>
         <Stack direction={"row"} justifyContent="space-between">
           {product.sale ? (

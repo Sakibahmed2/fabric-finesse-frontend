@@ -8,16 +8,10 @@ import { ReactNode, useEffect } from "react";
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
-  useEffect(() => {
-    const redirectUser = async () => {
-      const user = getUserInfo();
-      if (!user) {
-        await router.push("/login");
-      }
-    };
-
-    redirectUser();
-  }, []);
+  const user = getUserInfo();
+  if (!user) {
+    return router.push("/login");
+  }
 
   return (
     <>

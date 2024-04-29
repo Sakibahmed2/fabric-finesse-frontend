@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import NavbarLink from "./NavbarLink";
 
 import Badge from "@mui/material/Badge";
+import Link from "next/link";
 
 const NavItems = () => {
   const AuthButton = dynamic(
@@ -36,7 +37,7 @@ const NavItems = () => {
         <NavbarLink title="Dashboard" path="/dashboard/my-orders" />
       )}
 
-      <Box>
+      <Box component={Link} href={"/checkout"}>
         <IconButton
           aria-label="cart"
           sx={{
