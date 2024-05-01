@@ -9,7 +9,13 @@ const orderApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    getUserOrder: build.query({
+      query: (userId) => ({
+        url: `/orders/${userId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useCreateOrderMutation } = orderApi;
+export const { useCreateOrderMutation, useGetUserOrderQuery } = orderApi;
