@@ -69,6 +69,7 @@ const ClothCard = ({ product }: { product: TProduct }) => {
           <AddCartButton
             _id={product._id}
             title={product.title}
+            image={product?.image}
             price={product.price}
             salePrice={product.salePrice}
             fullWidthButton

@@ -9,6 +9,7 @@ import { addToCart } from "@/redux/features/cartSlice";
 type TAddToCartButton = {
   _id: string | undefined;
   title: string;
+  image: string;
   price: number;
   salePrice?: number | null;
   fullWidthButton?: boolean;
@@ -18,6 +19,7 @@ type TAddToCartButton = {
 const AddCartButton = ({
   _id,
   title,
+  image,
   price,
   salePrice,
   fullWidthButton = false,
@@ -29,6 +31,7 @@ const AddCartButton = ({
     const product = {
       _id,
       title,
+      image,
       price,
       salePrice,
     };
