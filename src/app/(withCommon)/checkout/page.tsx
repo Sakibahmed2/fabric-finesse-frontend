@@ -1,9 +1,14 @@
 "use client";
 
-import { useAppSelector } from "@/redux/hooks";
+import { useCreateOrderMutation } from "@/redux/api/ordersApi";
+import { deleteCart } from "@/redux/features/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { getUserInfo } from "@/services/authService";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type TCartItem = {
   _id: string;
@@ -15,7 +20,14 @@ type TCartItem = {
 };
 
 const CheckoutPage = () => {
+  const [createOrder] = useCreateOrderMutation();
+
   const data: any = useAppSelector((state) => state.cart.carts);
+  const dispatch = useAppDispatch();
+
+  const user: any = getUserInfo();
+
+  const router = useRouter();
 
   const cartData: TCartItem[] = data.reduce(
     (acc: TCartItem[], item: TCartItem) => {
@@ -83,9 +95,12 @@ const CheckoutPage = () => {
     { field: "quantity", headerName: "Quantity", flex: 1 },
   ];
 
-  const handleCreateOrder = () => {
+  const handleCreateOrder = async () => {
+    const toastId = toast.loading("Creating...");
+
     const newOrder = {
-      userId: "user123",
+      userId: user?.userId,
+      userEmail: user?.email,
       items: cartData.map((item) => ({
         productId: item._id,
         quantity: item.quantity,
@@ -95,7 +110,16 @@ const CheckoutPage = () => {
       status: "pending",
     };
 
-    console.log(newOrder);
+    try {
+      const res: any = await createOrder(newOrder);
+      if (res?.data?.success) {
+        toast.success(res.data?.message, { id: toastId });
+        dispatch(deleteCart());
+        router.push("/");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
