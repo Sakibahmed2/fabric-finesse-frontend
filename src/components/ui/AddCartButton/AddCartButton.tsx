@@ -5,6 +5,9 @@ import React from "react";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useAppDispatch } from "@/redux/hooks";
 import { addToCart } from "@/redux/features/cartSlice";
+import { getUserInfo } from "@/services/authService";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 type TAddToCartButton = {
   _id: string | undefined;
@@ -27,16 +30,38 @@ const AddCartButton = ({
 }: TAddToCartButton) => {
   const dispatch = useAppDispatch();
 
-  const handleAddToCart = () => {
-    const product = {
-      _id,
-      title,
-      image,
-      price,
-      salePrice,
-    };
+  const router = useRouter();
 
-    dispatch(addToCart(product));
+  const user: any = getUserInfo();
+
+  console.log(user?.userId);
+
+  const handleAddToCart = () => {
+    if (!user?.userId) {
+      Swal.fire({
+        title: "Please login",
+        text: "You wan to login first to order this product",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Login",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          return router.push("/login");
+        }
+      });
+    } else {
+      const product = {
+        _id,
+        title,
+        image,
+        price,
+        salePrice,
+      };
+
+      dispatch(addToCart(product));
+    }
   };
 
   return (

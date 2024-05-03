@@ -1,5 +1,6 @@
 "use client";
 
+import EmptyOrder from "@/components/ui/EmptyOrder/EmptyOrder";
 import { useCreateOrderMutation } from "@/redux/api/ordersApi";
 import { deleteCart } from "@/redux/features/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -26,6 +27,7 @@ const CheckoutPage = () => {
   const dispatch = useAppDispatch();
 
   const user: any = getUserInfo();
+  console.log(user);
 
   const router = useRouter();
 
@@ -51,15 +53,19 @@ const CheckoutPage = () => {
     []
   );
 
-  const subtotal = cartData.reduce((total, item) => {
+  const totalAmount = cartData.reduce((total, item) => {
     const itemPrice =
       item.salePrice !== undefined ? item.salePrice : item.price;
     if (itemPrice !== null) {
       const itemTotal = itemPrice * (item.quantity || 1);
       return total + itemTotal;
     }
+
     return total;
   }, 0);
+
+  const subtotal = totalAmount.toFixed(2);
+  const grandTotal = (parseFloat(subtotal) + 15).toFixed(2);
 
   const columns: GridColDef[] = [
     {
@@ -110,6 +116,8 @@ const CheckoutPage = () => {
       status: "pending",
     };
 
+    console.log(newOrder);
+
     try {
       const res: any = await createOrder(newOrder);
       if (res?.data?.success) {
@@ -139,15 +147,19 @@ const CheckoutPage = () => {
 
         <Stack>
           <Box>
-            <DataGrid
-              rows={cartData.map((item: TCartItem, index: number) => ({
-                ...item,
-                id: index,
-              }))}
-              columns={columns}
-              getRowId={(row) => row.id}
-              hideFooter
-            />
+            {!!cartData.length ? (
+              <DataGrid
+                rows={cartData.map((item: TCartItem, index: number) => ({
+                  ...item,
+                  id: index,
+                }))}
+                columns={columns}
+                getRowId={(row) => row.id}
+                hideFooter
+              />
+            ) : (
+              <EmptyOrder />
+            )}
           </Box>
 
           <Box
@@ -224,7 +236,7 @@ const CheckoutPage = () => {
               </Stack>
               <Stack direction={"row"} justifyContent={"space-between"} mt={1}>
                 <Typography fontWeight={600}>Grand total </Typography>
-                <Typography fontWeight={600}>{subtotal + 15}৳</Typography>
+                <Typography fontWeight={600}>{grandTotal}৳</Typography>
               </Stack>
 
               <Button

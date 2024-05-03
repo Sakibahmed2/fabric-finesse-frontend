@@ -31,6 +31,7 @@
     "redux-persist": "^6.0.0",
     "slick-carousel": "^1.8.1",
     "sonner": "^1.4.41",
+    "sweetalert2": "^11.10.8",
     "swiper": "^11.0.7",
     "tailwind-merge": "^2.2.2",
     "zod": "^3.22.5"

@@ -1,15 +1,21 @@
 "use client";
 
+import EmptyOrder from "@/components/ui/EmptyOrder/EmptyOrder";
 import FFLoading from "@/components/ui/Loading/FFLoading";
 import { useGetUserOrderQuery } from "@/redux/api/ordersApi";
 import { getUserInfo } from "@/services/authService";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 const MyOrderPage = () => {
   const user: any = getUserInfo();
 
   const { data, isLoading } = useGetUserOrderQuery(user?.userId);
+
+  const myOrder = data?.data || [];
+
+  // console.log(!!myOrder.length);
+  console.log(myOrder);
 
   const columns: GridColDef[] = [
     {
@@ -48,15 +54,21 @@ const MyOrderPage = () => {
 
   return (
     <Box>
-      {!isLoading ? (
-        <DataGrid
-          rows={data?.data}
-          columns={columns}
-          getRowId={(row) => row._id}
-          hideFooter
-        />
+      {!!myOrder?.length ? (
+        <Box>
+          {!isLoading ? (
+            <DataGrid
+              rows={myOrder}
+              columns={columns}
+              getRowId={(row) => row._id}
+              hideFooter
+            />
+          ) : (
+            <FFLoading />
+          )}
+        </Box>
       ) : (
-        <FFLoading />
+        <EmptyOrder />
       )}
     </Box>
   );
