@@ -1,23 +1,28 @@
 "use client";
 
+import storeIcon from "@/assets/icons/store.png";
 import FFInput from "@/components/Forms/FFInput";
 import FabricForm from "@/components/Forms/FabricForm";
+import { useRegisterUserMutation } from "@/redux/api/authApi";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import Image from "next/image";
-import React from "react";
-import { FieldValues } from "react-hook-form";
-import storeIcon from "@/assets/icons/store.png";
 import Link from "next/link";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRegisterUserMutation } from "@/redux/api/authApi";
+import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 export const userValidationSchema = z.object({
   name: z.string().min(1, "Please enter your name"),
   email: z.string().email("Please provide a valid email"),
   password: z.string().min(6, "Password must be at least 6 character"),
 });
+
+// type TUserRegister = {
+//   name: string;
+//   email: string;
+//   password: string;
+// };
 
 const defaultValues = {
   name: "",

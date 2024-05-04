@@ -10,7 +10,9 @@ import {
 } from "@mui/material";
 
 const ProductsPage = async () => {
-  const res = await fetch(`http://localhost:5000/api/v1/products`);
+  const res = await fetch(
+    `https://fabric-finesse-backend.vercel.app/api/v1/products`
+  );
   const { data } = await res.json();
   return (
     <Box my={10}>

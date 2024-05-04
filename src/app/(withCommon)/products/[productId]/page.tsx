@@ -13,7 +13,9 @@ type TProps = {
 };
 
 export const generateStaticParams = async () => {
-  const res = await fetch("http://localhost:5000/api/v1/products");
+  const res = await fetch(
+    "https://fabric-finesse-backend.vercel.app/api/v1/products"
+  );
   const { data } = await res.json();
   return data.slice(0, 10).map((product: TProduct) => ({
     productId: product._id,
@@ -22,7 +24,7 @@ export const generateStaticParams = async () => {
 
 const SingleProductPage = async ({ params }: TProps) => {
   const res = await fetch(
-    `http://localhost:5000/api/v1/products/${params.productId}`,
+    `https://fabric-finesse-backend.vercel.app/api/v1/products/${params.productId}`,
     {
       cache: "no-store",
     }
@@ -104,6 +106,7 @@ const SingleProductPage = async ({ params }: TProps) => {
                   price={price}
                   salePrice={salePrice}
                   title={title}
+                  image={image}
                 />
               </Box>
             </Stack>
