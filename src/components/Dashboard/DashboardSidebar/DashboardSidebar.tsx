@@ -10,6 +10,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import React from "react";
 import Sidebar from "../Sidebar/Sidebar";
+import { Avatar, Badge, Stack } from "@mui/material";
+import AccountMenu from "../AccountMenu/AccountMenu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { getUserInfo } from "@/services/authService";
 
 const drawerWidth = 240;
 
@@ -20,6 +24,8 @@ export default function DashboardSidebar({
 }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
+
+  const user: any = getUserInfo();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -58,11 +64,53 @@ export default function DashboardSidebar({
           >
             <MenuIcon />
           </IconButton>
-          <Box>
-            <Typography component={"p"}>Welcome to,</Typography>
-            <Typography fontSize={20} component={"h1"} fontWeight={600}>
-              Fabric finesse
-            </Typography>
+          {/* <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box>
+              <Typography component={"p"}>Welcome to,</Typography>
+              <Typography fontSize={20} component={"h1"} fontWeight={600}>
+                Fabric finesse
+              </Typography>
+            </Box>
+            <Box>
+              <Typography component={"p"}>Welcome to,</Typography>
+              <Typography fontSize={20} component={"h1"} fontWeight={600}>
+                Fabric finesse
+              </Typography>
+            </Box>
+          </Box> */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Box>
+              <Typography component={"p"}>Welcome to,</Typography>
+              <Typography fontSize={20} component={"h1"} fontWeight={600}>
+                Fabric finesse
+              </Typography>
+            </Box>
+            <Stack direction={"row"} gap={3}>
+              <Badge badgeContent={1} color="primary">
+                <IconButton sx={{ background: "#fffff" }}>
+                  <NotificationsIcon color="action" />
+                </IconButton>
+              </Badge>
+              <Avatar
+                alt={user ? user?.email : "name"}
+                src={
+                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDh8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
+                }
+              />
+              <AccountMenu />
+            </Stack>
           </Box>
         </Toolbar>
       </AppBar>

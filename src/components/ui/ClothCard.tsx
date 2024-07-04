@@ -9,7 +9,7 @@ import AddCartButton from "./AddCartButton/AddCartButton";
 
 const ClothCard = ({ product }: { product: TProduct }) => {
   return (
-    <Box className="rounded-lg bg-white text-white shadow-secondary-1 dark:bg-surface-dark w-[280px] border-2 border-gray-500 p-2 mx-auto">
+    <Box className="rounded-lg bg-white text-white shadow-secondary-1 dark:bg-surface-dark w-full max-w-[280px] border-2 border-gray-500 p-2 mx-auto">
       <Box position="relative">
         <Typography
           position="absolute"

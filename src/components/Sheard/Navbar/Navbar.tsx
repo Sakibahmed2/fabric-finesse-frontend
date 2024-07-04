@@ -63,6 +63,20 @@ export default function Navbar() {
                 sx={{ mr: 2, display: { sm: "none" } }}
               >
                 <MenuIcon />
+                <Typography
+                  variant="h5"
+                  component={Link}
+                  href={"/"}
+                  fontWeight={600}
+                  sx={{
+                    ml: 10,
+                  }}
+                >
+                  Fabric{" "}
+                  <Box component="span" color="primary.main">
+                    finesse
+                  </Box>
+                </Typography>
               </IconButton>
               <Typography
                 sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}

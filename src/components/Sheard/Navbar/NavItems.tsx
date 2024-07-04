@@ -32,7 +32,7 @@ const NavItems = () => {
       <NavbarLink title="Products" path="/products" />
 
       {userRole === "admin" ? (
-        <NavbarLink title="Dashboard" path="/dashboard/products" />
+        <NavbarLink title="Dashboard" path="/dashboard" />
       ) : (
         <NavbarLink title="Dashboard" path="/dashboard/my-orders" />
       )}

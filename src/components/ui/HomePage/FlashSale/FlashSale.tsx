@@ -39,19 +39,13 @@ const FlashSale = async () => {
           </Stack>
         </Box>
         <Box mt={4}>
-          <Stack
-            direction={{
-              md: "row",
-            }}
-            gap={3}
-            sx={{
-              margin: "0 auto",
-            }}
-          >
+          <Grid container spacing={2}>
             {saleProducts?.slice(0, 4)?.map((product: TProduct) => (
-              <ClothCard key={product._id} product={product} />
+              <Grid item xs={6} md={3} key={product._id}>
+                <ClothCard product={product} />
+              </Grid>
             ))}
-          </Stack>
+          </Grid>
         </Box>
       </Container>
     </Box>

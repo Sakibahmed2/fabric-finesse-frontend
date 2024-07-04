@@ -1,7 +1,7 @@
 import ClothCard from "@/components/ui/ClothCard";
 import CountdownTimer from "@/components/ui/Countdown";
 import { TProduct } from "@/types/global";
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Typography } from "@mui/material";
 
 const FlashSalePage = async () => {
   const res = await fetch(
@@ -39,11 +39,13 @@ const FlashSalePage = async () => {
           </Box>
         </Box>
         <Box mt={5}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 ">
+          <Grid container spacing={2}>
             {flashSale?.map((product: TProduct) => (
-              <ClothCard key={product._id} product={product} />
+              <Grid item xs={6} md={3} key={product._id}>
+                <ClothCard product={product} />
+              </Grid>
             ))}
-          </div>
+          </Grid>
         </Box>
         <Box textAlign={"center"} mt={5}>
           <Button variant="outlined">Load more</Button>

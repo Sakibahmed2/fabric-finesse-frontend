@@ -40,12 +40,16 @@ const LoginPage = () => {
   return (
     <Container>
       <Stack
+        direction={{
+          md: "row",
+        }}
         sx={{
           height: "100vh",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
+        {/* login */}
         <Box
           sx={{
             maxWidth: 500,
@@ -56,6 +60,39 @@ const LoginPage = () => {
             textAlign: "center",
           }}
         >
+          <Box
+            sx={{
+              bgcolor: "lightcyan",
+              borderRadius: 2,
+              mb: 2,
+              padding: "10px 10px",
+              textAlign: "start",
+            }}
+          >
+            {/* admin credential */}
+            <Typography component={"p"} fontSize={14}>
+              Admin email:{" "}
+              <Typography component={"span"} fontWeight={"600"} fontSize={14}>
+                admin@gmail.com
+              </Typography>{" "}
+              / Pass:{" "}
+              <Typography component={"span"} fontWeight={"600"} fontSize={14}>
+                123456
+              </Typography>{" "}
+            </Typography>
+
+            {/* user credential */}
+            <Typography component={"p"} fontSize={14}>
+              User email:{" "}
+              <Typography component={"span"} fontWeight={"600"} fontSize={14}>
+                test@gmail.com
+              </Typography>{" "}
+              / Pass:{" "}
+              <Typography component={"span"} fontWeight={"600"} fontSize={14}>
+                123456
+              </Typography>{" "}
+            </Typography>
+          </Box>
           <Stack
             sx={{
               justifyContent: "center",

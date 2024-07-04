@@ -1,15 +1,23 @@
 "use client";
 
-import { ListItem, ListItemButton, ListItemText } from "@mui/material";
+import {
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  SvgIconTypeMap,
+} from "@mui/material";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type TItemsLinkProps = {
   title: string;
   path: string;
+  icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string };
 };
 
-const ItemsLink = ({ title, path }: TItemsLinkProps) => {
+const ItemsLink = ({ title, path, icon: IconComponent }: TItemsLinkProps) => {
   const pathname = usePathname();
 
   return (
@@ -31,6 +39,7 @@ const ItemsLink = ({ title, path }: TItemsLinkProps) => {
         }}
       >
         <ListItemButton>
+          <ListItemIcon>{IconComponent && <IconComponent />}</ListItemIcon>
           <ListItemText primary={title} />
         </ListItemButton>
       </ListItem>

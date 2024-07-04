@@ -1,5 +1,6 @@
 import AddCartButton from "@/components/ui/AddCartButton/AddCartButton";
 import ReviewSection from "@/components/ui/HomePage/ReviewSection/ReviewSection";
+import ImageAnimation from "@/components/ui/SingleProductAnimation/ImageAnimation";
 import { TProduct } from "@/types/global";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -32,7 +33,7 @@ const SingleProductPage = async ({ params }: TProps) => {
   const { data } = await res.json();
 
   const { _id, image, price, description, rating, title, salePrice, sale } =
-    data;
+    data || [];
 
   return (
     <Box my={15}>
@@ -43,9 +44,20 @@ const SingleProductPage = async ({ params }: TProps) => {
           }}
           gap={5}
         >
+          {/* image */}
+
           <Box>
-            <Image src={image} width={500} height={500} alt="product image" />
+            {/* <Image src={image} width={500} height={500} alt="product image" /> */}
+            <ImageAnimation
+              img={image}
+              width={500}
+              height={500}
+              alt="product image"
+            />
           </Box>
+
+          {/* product info */}
+
           <Box
             width={{
               md: 500,

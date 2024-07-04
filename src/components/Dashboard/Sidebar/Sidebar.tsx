@@ -4,6 +4,11 @@ import { Box, Divider, List, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
+// icons
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ListIcon from "@mui/icons-material/List";
+import InventoryIcon from "@mui/icons-material/Inventory";
+
 const Sidebar = () => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
@@ -40,8 +45,21 @@ const Sidebar = () => {
       <List>
         {userRole === "admin" ? (
           <>
-            <ItemsLink path="/dashboard/products" title="All products" />
-            <ItemsLink path="/dashboard/orders" title="Orders" />
+            <ItemsLink
+              path="/dashboard"
+              title="Dashboard"
+              icon={DashboardIcon}
+            />
+            <ItemsLink
+              path="/dashboard/products"
+              title="All products"
+              icon={ListIcon}
+            />
+            <ItemsLink
+              path="/dashboard/orders"
+              title="Orders"
+              icon={InventoryIcon}
+            />
           </>
         ) : (
           <>

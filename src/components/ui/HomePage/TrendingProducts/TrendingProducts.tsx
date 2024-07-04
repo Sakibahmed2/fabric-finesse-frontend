@@ -62,11 +62,18 @@ const TrendingProducts = async () => {
         </Box>
 
         <Box mt={5}>
-          <div className="grid md:grid-cols-4 gap-10 ">
+          {/* <div className="grid md:grid-cols-4 gap-10 ">
             {trendingProducts?.slice(0, 6)?.map((product: TProduct) => (
               <ClothCard key={product._id} product={product} />
             ))}
-          </div>
+          </div> */}
+          <Grid container spacing={2}>
+            {trendingProducts?.slice(0, 6)?.map((product: TProduct) => (
+              <Grid xs={6} md={3} item key={product._id}>
+                <ClothCard product={product} />
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       </Container>
     </Box>

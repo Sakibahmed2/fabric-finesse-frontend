@@ -25,18 +25,15 @@ const ProductsPage = async () => {
             md: 5,
           }}
         >
-          <Box
-            sx={{
-              width: {
-                md: 400,
-              },
-            }}
-          >
+          <Box>
             <Box
               sx={{
                 border: "2px solid gray",
                 padding: "40px 20px",
                 borderRadius: 2,
+                width: {
+                  md: 250,
+                },
               }}
             >
               <Typography
@@ -67,6 +64,9 @@ const ProductsPage = async () => {
                 padding: "40px 20px",
                 borderRadius: 2,
                 mt: 3,
+                width: {
+                  md: 250,
+                },
               }}
             >
               <Typography
@@ -124,11 +124,17 @@ const ProductsPage = async () => {
               sense of urgency.
             </Typography>
             <Box mt={5}>
-              <div className="grid md:grid-cols-3 gap-10 ">
+              {/* <div className="grid md:grid-cols-3 gap-10 ">
+               
+              </div> */}
+
+              <Grid container spacing={2}>
                 {data?.map((product: TProduct) => (
-                  <ClothCard key={product._id} product={product} />
+                  <Grid item xs={6} md={4} key={product._id}>
+                    <ClothCard key={product._id} product={product} />
+                  </Grid>
                 ))}
-              </div>
+              </Grid>
             </Box>
           </Box>
         </Stack>
