@@ -1,14 +1,16 @@
 "use client";
 
-import EmptyOrder from "@/components/ui/EmptyOrder/EmptyOrder";
+import FabricForm from "@/components/Forms/FabricForm";
+import FFInput from "@/components/Forms/FFInput";
 import { useCreateOrderMutation } from "@/redux/api/ordersApi";
 import { deleteCart } from "@/redux/features/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getUserInfo } from "@/services/authService";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, Button, Checkbox, Container, Stack, Typography } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 type TCartItem = {
@@ -27,7 +29,6 @@ const CheckoutPage = () => {
   const dispatch = useAppDispatch();
 
   const user: any = getUserInfo();
-  console.log(user);
 
   const router = useRouter();
 
@@ -64,8 +65,10 @@ const CheckoutPage = () => {
     return total;
   }, 0);
 
-  const subtotal = totalAmount.toFixed(2);
-  const grandTotal = (parseFloat(subtotal) + 15).toFixed(2);
+  const subtotal = totalAmount;
+  // Shipping state: 60 for inside Dhaka, 120 for outside
+  const [shipping, setShipping] = useState(60);
+  const grandTotal = subtotal + shipping;
 
   const columns: GridColDef[] = [
     {
@@ -131,136 +134,114 @@ const CheckoutPage = () => {
   };
 
   return (
-    <Container>
-      <Box my={20}>
-        <Box
-          sx={{
-            bgcolor: "lightcyan",
-            padding: "20px 10px",
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h4" fontWeight={600} color="gray">
-            Checkout
-          </Typography>
+    <Container sx={{
+      my: 12
+    }}>
+      <Stack direction={'row'} justifyContent={'center'} mb={5}>
+        <Typography variant="h4" fontWeight={600} mb={2} alignItems={'center'} sx={{
+          color: 'black'
+        }}>
+          Place Your Order
+        </Typography>
+      </Stack>
+      <Stack direction={'row'}>
+        {/* Checkout form */}
+        <Box sx={{
+          width: "50%",
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          p: 2,
+        }} >
+          <FabricForm onSubmit={() => { }} >
+            {/* Form fields can be added here if needed */}
+            <Stack direction={'column'} gap={2}>
+              <FFInput label="Full Name" name="fullName" required fullWidth />
+              <FFInput label="Email" name="email" required fullWidth />
+              <FFInput label="Address" name="address" required fullWidth multiline rows={5} />
+            </Stack>
+
+            <Stack direction={'row'} alignItems={'center'}>
+              <Checkbox
+                color="default"
+                checked={shipping === 60}
+                onChange={() => setShipping(60)}
+              />
+              <span className="text-[16px] text-black">Inside Dhaka-60TK</span>
+            </Stack>
+
+            <Stack direction={'row'} alignItems={'center'} sx={{ mt: -2 }}>
+              <Checkbox
+                color="default"
+                checked={shipping === 120}
+                onChange={() => setShipping(120)}
+              />
+              <span className="text-[16px] text-black">Outside Dhaka-120TK</span>
+            </Stack>
+
+            <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth onClick={handleCreateOrder}>
+              Place Order
+            </Button>
+
+          </FabricForm>
         </Box>
 
-        <Stack>
-          <Box>
-            {!!cartData.length ? (
-              <DataGrid
-                rows={cartData.map((item: TCartItem, index: number) => ({
-                  ...item,
-                  id: index,
-                }))}
-                columns={columns}
-                getRowId={(row) => row.id}
-                hideFooter
-              />
-            ) : (
-              <EmptyOrder />
-            )}
-          </Box>
-
-          <Box
-            sx={{
-              width: 400,
-              mt: 2,
-              position: {
-                md: "fixed",
-              },
-              top: 100,
-              right: 0,
-              bgcolor: "#F5F5F5 ",
-              padding: "20px 30px",
-              borderRadius: 2,
-              zIndex: 999,
-            }}
-          >
-            <Typography
-              variant="h5"
-              component={"p"}
-              textAlign={"center"}
-              mb={2}
-            >
-              Order items
-            </Typography>
-            <Stack spacing={2}>
-              {cartData?.map((items, index) => (
-                <Stack
-                  key={items._id}
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  sx={{
-                    bgcolor: "white",
-                    padding: "10px 10px",
-                    borderRadius: 1,
-                  }}
-                >
-                  <Typography component={"span"}>
-                    {index + 1}
-                    {". "}{" "}
-                  </Typography>
-                  <Typography component={"p"} fontWeight={600}>
-                    {items.title.slice(0, 10)}
-                  </Typography>{" "}
-                  {"="}{" "}
-                  <Box>
-                    {items.salePrice ? (
-                      <Typography fontWeight={600}>
-                        ৳ {items.salePrice}{" "}
-                      </Typography>
-                    ) : (
-                      <Typography fontWeight={600}>৳ {items.price}</Typography>
-                    )}
+        {/* Order summary */}
+        <Box
+          sx={{
+            width: "50%",
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            p: 2,
+            ml: 4,
+            borderRadius: 2,
+            bgcolor: '#fff',
+            height: 'fit-content',
+          }}
+        >
+          <Typography variant="h6" fontWeight={600} mb={2}>
+            Order Summary
+          </Typography>
+          {cartData.length === 0 ? (
+            <Typography color="text.secondary">Your cart is empty.</Typography>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Box>
+                {cartData.map((item) => (
+                  <Box key={item._id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Image src={item.image} width={40} height={40} alt={item.title} style={{ borderRadius: 4, objectFit: 'cover' }} />
+                      <Box>
+                        <Typography fontWeight={500}>{item.title}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Quantity: {item.quantity}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography fontWeight={600}>
+                      ৳ {(item.salePrice ?? item.price) * (item.quantity || 1)}
+                    </Typography>
                   </Box>
-                </Stack>
-              ))}
-            </Stack>
-            <Box mt={2}>
-              <Stack direction={"row"} justifyContent={"space-between"}>
-                <Typography color={"gray"} fontSize={15}>
-                  Delivery Charge{" "}
-                </Typography>
-                <Typography fontWeight={600} fontSize={15}>
-                  15৳
-                </Typography>
-              </Stack>
-              <Stack direction={"row"} justifyContent={"space-between"}>
-                <Typography color={"gray"} fontSize={15}>
-                  Subtotal{" "}
-                </Typography>
-                <Typography fontWeight={600} fontSize={15}>
-                  {subtotal}৳
-                </Typography>
-              </Stack>
-              <Stack direction={"row"} justifyContent={"space-between"} mt={1}>
-                <Typography fontWeight={600}>Grand total </Typography>
-                <Typography fontWeight={600}>{grandTotal}৳</Typography>
-              </Stack>
-
-              <Button
-                fullWidth
-                sx={{
-                  my: 2,
-                }}
-                onClick={() => handleCreateOrder()}
-              >
-                Checkout
-              </Button>
-              <Stack direction={"row"} justifyContent={"space-between"}>
-                <Typography color={"red"} fontSize={15} fontWeight={600}>
-                  Payment method
-                </Typography>
-                <Typography fontSize={15} color={"red"} fontWeight={600}>
-                  Cash On Delivery
-                </Typography>
-              </Stack>
+                ))}
+                <Box sx={{ borderTop: '1px solid #eee', my: 2 }} />
+              </Box>
+              <Box sx={{ flex: 1 }} />
+              <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography>Subtotal</Typography>
+                  <Typography>৳ {subtotal}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography>Shipping</Typography>
+                  <Typography>৳ {shipping}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, mt: 2 }}>
+                  <Typography>Total</Typography>
+                  <Typography>৳ {grandTotal}</Typography>
+                </Box>
+              </Box>
             </Box>
-          </Box>
-        </Stack>
-      </Box>
-    </Container>
+          )}
+        </Box>
+      </Stack>
+    </Container >
   );
 };
 
