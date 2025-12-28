@@ -71,6 +71,7 @@ const AddCartButton = ({
       sx={{
         mt: 2,
         ...sx,
+        borderRadius: "2px",
       }}
       fullWidth={fullWidthButton}
     >

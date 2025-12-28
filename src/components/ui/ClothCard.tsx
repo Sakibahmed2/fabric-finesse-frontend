@@ -9,7 +9,12 @@ import AddCartButton from "./AddCartButton/AddCartButton";
 
 const ClothCard = ({ product }: { product: TProduct }) => {
   return (
-    <Box className="rounded-lg bg-white text-white shadow-secondary-1 dark:bg-surface-dark w-full max-w-[280px] border-2 border-gray-500 p-2 mx-auto">
+    <Box
+      sx={{
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        p: 1
+      }}
+    >
       <Box position="relative">
         <Typography
           position="absolute"
@@ -29,14 +34,14 @@ const ClothCard = ({ product }: { product: TProduct }) => {
       </Box>
       <Box component={Link} href={`/products/${product._id}`}>
         <Image
-          className="rounded-lg"
+          className="rounded-sm"
           src={product.image}
           width={300}
           height={300}
           alt="products"
         />
       </Box>
-      <Box px={1} mt={1}>
+      <Box mt={1}>
         <Typography component="p" fontSize={20}>
           {product.title.length > 20
             ? product.title.substring(0, 20) + "..."
@@ -60,10 +65,7 @@ const ClothCard = ({ product }: { product: TProduct }) => {
             <Typography fontWeight={600}>৳ {product.price}</Typography>
           )}
 
-          <Typography component="span">
-            {" "}
-            <AddShoppingCartIcon sx={{ fontSize: "20px" }} />
-          </Typography>
+
         </Stack>
         <Box>
           <AddCartButton
