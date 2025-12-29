@@ -46,3 +46,8 @@ export type TResponse = {
   };
   error?: TError;
 };
+
+export type TModalPageProps = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+};

@@ -25,11 +25,11 @@ const NavItems = () => {
       <NavbarLink title="Flash Sale" path="/flash-sale" />
       <NavbarLink title="Products" path="/products" />
 
-      {userRole === "admin" ? (
+      {userInfo && userRole === "admin" ? (
         <NavbarLink title="Dashboard" path="/dashboard" />
-      ) : (
+      ) : userInfo ? (
         <NavbarLink title="Profile" path="/profile" />
-      )}
+      ) : null}
       <AuthButton />
     </>
   );

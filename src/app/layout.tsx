@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={poppins.className}>
         <Providers>
           <AppRouterCacheProvider>
-            <Toaster richColors position="top-right" />
+            <Toaster richColors position="top-center" />
             {children}
           </AppRouterCacheProvider>
         </Providers>

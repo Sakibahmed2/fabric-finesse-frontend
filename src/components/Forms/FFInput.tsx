@@ -33,7 +33,9 @@ const FFInput = ({
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
-          sx={{ ...sx }}
+          sx={{
+            ...sx
+          }}
           label={label}
           placeholder={label}
           type={type}
@@ -45,6 +47,7 @@ const FFInput = ({
           multiline={multiline}
           error={!!error?.message}
           helperText={error?.message}
+
         />
       )}
     />

@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListIcon from "@mui/icons-material/List";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import CategoryIcon from '@mui/icons-material/Category';
 
 const Sidebar = () => {
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -43,7 +44,7 @@ const Sidebar = () => {
       </Stack>
       <Divider />
       <List>
-        {userRole === "admin" ? (
+        {userRole === "admin" && (
           <>
             <ItemsLink
               path="/dashboard"
@@ -56,14 +57,15 @@ const Sidebar = () => {
               icon={ListIcon}
             />
             <ItemsLink
+              path="/dashboard/categories"
+              title="Categories"
+              icon={CategoryIcon}
+            />
+            <ItemsLink
               path="/dashboard/orders"
               title="Orders"
               icon={InventoryIcon}
             />
-          </>
-        ) : (
-          <>
-            <ItemsLink path="/dashboard/my-orders" title="My order" />
           </>
         )}
       </List>
