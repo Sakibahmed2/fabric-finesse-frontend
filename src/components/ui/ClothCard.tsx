@@ -21,7 +21,7 @@ const ClothCard = ({ product }: { product: TProduct }) => {
           top={10}
           right={10}
           component="span"
-          hidden={!product.sale}
+          hidden={!product.discountPrice}
           sx={{
             bgcolor: "black",
             color: "white",
@@ -35,7 +35,7 @@ const ClothCard = ({ product }: { product: TProduct }) => {
       <Box component={Link} href={`/products/${product._id}`}>
         <Image
           className="rounded-sm"
-          src={product.image}
+          src={Array.isArray(product.images) && product.images.length > 0 && product.images[0] ? product.images[0] : "/placeholder.png"}
           width={300}
           height={300}
           alt="products"
@@ -43,12 +43,12 @@ const ClothCard = ({ product }: { product: TProduct }) => {
       </Box>
       <Box mt={1}>
         <Typography component="p" fontSize={20}>
-          {product.title.length > 20
-            ? product.title.substring(0, 20) + "..."
-            : product.title}
+          {
+            product?.name
+          }
         </Typography>
         <Stack direction={"row"} justifyContent="space-between">
-          {product.sale ? (
+          {product.discountPrice ? (
             <Stack direction={"row"} gap={1}>
               <Typography
                 fontWeight={600}
@@ -59,7 +59,7 @@ const ClothCard = ({ product }: { product: TProduct }) => {
               >
                 ৳ {product.price}{" "}
               </Typography>
-              <Typography fontWeight={600}>৳ {product.salePrice} </Typography>
+              <Typography fontWeight={600}>৳ {product.discountPrice} </Typography>
             </Stack>
           ) : (
             <Typography fontWeight={600}>৳ {product.price}</Typography>
@@ -70,10 +70,10 @@ const ClothCard = ({ product }: { product: TProduct }) => {
         <Box>
           <AddCartButton
             _id={product._id}
-            title={product.title}
-            image={product?.image}
+            title={product.name}
+            image={product?.images[0]}
             price={product.price}
-            salePrice={product.salePrice}
+            salePrice={product.discountPrice}
             fullWidthButton
           />
         </Box>

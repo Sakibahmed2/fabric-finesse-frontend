@@ -6,15 +6,14 @@ import { useGetAllProductsQuery } from "@/redux/api/productsApi";
 import { TProduct } from "@/types/global";
 import {
   Box,
-  Checkbox,
+  Button,
   Container,
+  Drawer,
   Grid,
+  IconButton,
   Stack,
   Typography,
-  Drawer,
-  Button,
-  useMediaQuery,
-  IconButton
+  useMediaQuery
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import { useState } from "react";
@@ -28,9 +27,9 @@ const ProductsPage = () => {
 
   if (isLoading) return <FFLoading />
 
-  const data = products?.data as TProduct[]
+  const data = products?.data?.result as TProduct[]
 
-  console.log({ data })
+  console.log(data)
 
   return (
     <Box my={10}>
@@ -235,7 +234,7 @@ const ProductsPage = () => {
               </div> */}
 
               <Grid container spacing={2}>
-                {data?.map((product: TProduct) => (
+                {data?.map((product: any) => (
                   <Grid item xs={6} md={4} key={product._id}>
                     <ClothCard key={product._id} product={product} />
                   </Grid>

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const TrendingProducts = async () => {
   const res = await fetch(
-    `https://fabric-finesse-backend.vercel.app/api/v1/products`,
+    `http://localhost:5000/api/v1/products`,
     {
       next: {
         revalidate: 30,
@@ -15,7 +15,7 @@ const TrendingProducts = async () => {
   );
   const { data } = await res.json();
 
-  const trendingProducts = data.sort(
+  const trendingProducts = data?.result?.sort(
     (a: TProduct, b: TProduct) => b.rating - a.rating
   );
 

@@ -4,15 +4,18 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 export type TProduct = {
-  _id?: string;
-  image: string;
-  title: string;
-  rating: number;
+  _id: string;
+  name: string;
+  slug: string;
+  category: {
+    _id: string;
+    name: string;
+  };
   price: number;
-  brand: string;
+  discountPrice?: number;
   description: string;
-  sale?: boolean;
-  salePrice?: number | null;
+  images: string[];
+  stock: number;
 };
 
 export type TUserInfo = {

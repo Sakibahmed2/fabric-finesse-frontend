@@ -1,12 +1,11 @@
-import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
-import ClothCard from "../../ClothCard";
-import { TProduct } from "@/types/global";
+import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import Link from "next/link";
+import ClothCard from "../../ClothCard";
 
 const FlashSale = async () => {
   const res = await fetch(
-    `https://fabric-finesse-backend.vercel.app/api/v1/products`,
+    `http://localhost:5000/api/v1/products`,
     {
       next: {
         revalidate: 30,
@@ -15,7 +14,7 @@ const FlashSale = async () => {
   );
   const { data } = await res.json();
 
-  const saleProducts = data?.filter((product: TProduct) => product.sale);
+  const saleProducts = data?.result?.filter((product: any) => product.discountPrice);
 
   return (
     <Box my={20}>
@@ -40,7 +39,7 @@ const FlashSale = async () => {
         </Box>
         <Box mt={4}>
           <Grid container spacing={2}>
-            {saleProducts?.slice(0, 4)?.map((product: TProduct) => (
+            {saleProducts?.slice(0, 4)?.map((product: any) => (
               <Grid item xs={6} md={3} key={product._id}>
                 <ClothCard product={product} />
               </Grid>

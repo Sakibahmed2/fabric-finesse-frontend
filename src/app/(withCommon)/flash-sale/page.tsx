@@ -1,22 +1,23 @@
 import ClothCard from "@/components/ui/ClothCard";
-import CountdownTimer from "@/components/ui/Countdown";
 import { TProduct } from "@/types/global";
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 
 const FlashSalePage = async () => {
   const res = await fetch(
-    `https://fabric-finesse-backend.vercel.app/api/v1/products`
+    `http://localhost:5000/api/v1/products`
   );
   const { data } = await res.json();
 
-  const flashSale = data?.filter((item: TProduct) => item.sale);
+  const flashSale = data?.result?.filter((item: any) => item.discountPrice);
+
+  console.log({ flashSale })
 
   return (
     <Box pt={15} mb={10}>
       <Container>
-        <Box textAlign={"center"}>
+        {/* <Box textAlign={"center"}>
           <CountdownTimer durationInMinutes={30} />
-        </Box>
+        </Box> */}
         <Box>
           <Box>
             <Typography variant="h4" component="h1" fontWeight={600}>
