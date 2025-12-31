@@ -18,8 +18,10 @@ type TCartItem = {
   title: string;
   image: string;
   price: number;
-  salePrice?: number | null;
+  discountPrice?: number | null;
   quantity?: number | undefined;
+  color?: string;
+  size?: string;
 };
 
 const CheckoutPage = () => {
@@ -56,7 +58,7 @@ const CheckoutPage = () => {
 
   const totalAmount = cartData.reduce((total, item) => {
     const itemPrice =
-      item.salePrice !== undefined ? item.salePrice : item.price;
+      item.discountPrice !== undefined ? item.discountPrice : item.price;
     if (itemPrice !== null) {
       const itemTotal = itemPrice * (item.quantity || 1);
       return total + itemTotal;
@@ -104,22 +106,30 @@ const CheckoutPage = () => {
     { field: "quantity", headerName: "Quantity", flex: 1 },
   ];
 
-  const handleCreateOrder = async () => {
+
+  const handleCreateOrder = async (formData?: any) => {
     const toastId = toast.loading("Creating...");
 
-    const newOrder = {
-      userId: user?.userId,
-      userEmail: user?.email,
-      items: cartData.map((item) => ({
-        productId: item._id,
-        quantity: item.quantity,
-        price: item.salePrice || item.price,
-      })),
-      totalAmount: subtotal + 15,
-      status: "pending",
-    };
+    // Generate a unique order_id (for demo, use timestamp)
+    const order_id = `ORD-${Date.now()}`;
+    // Use address from form or fallback
+    const address = formData?.address;
 
-    console.log(newOrder);
+    const newOrder = {
+      order_id,
+      user_id: user?.userId,
+      items: cartData.map((item) => ({
+        product_id: item._id,
+        color: item.color,
+        size: item.size,
+        quantity: item.quantity,
+      })),
+      subtotal,
+      delivery_fee: shipping,
+      total: grandTotal.toFixed(2),
+      status: "pending",
+      address,
+    };
 
     try {
       const res: any = await createOrder(newOrder);
@@ -151,8 +161,7 @@ const CheckoutPage = () => {
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           p: 2,
         }} >
-          <FabricForm onSubmit={() => { }} >
-            {/* Form fields can be added here if needed */}
+          <FabricForm onSubmit={handleCreateOrder} >
             <Stack direction={'column'} gap={2}>
               <FFInput label="Full Name" name="fullName" required fullWidth />
               <FFInput label="Email" name="email" required fullWidth />
@@ -177,10 +186,9 @@ const CheckoutPage = () => {
               <span className="text-[16px] text-black">Outside Dhaka-120TK</span>
             </Stack>
 
-            <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth onClick={handleCreateOrder}>
+            <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth type="submit">
               Place Order
             </Button>
-
           </FabricForm>
         </Box>
 
@@ -213,10 +221,17 @@ const CheckoutPage = () => {
                         <Typography variant="body2" color="text.secondary">
                           Quantity: {item.quantity}
                         </Typography>
+                        {(item.color || item.size) && (
+                          <Typography variant="body2" color="text.secondary">
+                            {item.color && <span>Color: <b style={{ textTransform: 'capitalize' }}>{item.color}</b></span>}
+                            {item.color && item.size && <span> | </span>}
+                            {item.size && <span>Size: <b style={{ textTransform: 'capitalize' }}>{item.size}</b></span>}
+                          </Typography>
+                        )}
                       </Box>
                     </Box>
                     <Typography fontWeight={600}>
-                      ৳ {(item.salePrice ?? item.price) * (item.quantity || 1)}
+                      ৳ {(item.discountPrice ?? item.price) * (item.quantity || 1)}
                     </Typography>
                   </Box>
                 ))}
@@ -234,7 +249,7 @@ const CheckoutPage = () => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, mt: 2 }}>
                   <Typography>Total</Typography>
-                  <Typography>৳ {grandTotal}</Typography>
+                  <Typography>৳ {grandTotal.toFixed(2)}</Typography>
                 </Box>
               </Box>
             </Box>

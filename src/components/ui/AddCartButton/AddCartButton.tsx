@@ -15,8 +15,11 @@ type TAddToCartButton = {
   image: string;
   price: number;
   salePrice?: number | null;
+  color?: string;
+  size?: string;
   fullWidthButton?: boolean;
   sx?: SxProps;
+  onBeforeAdd?: (cartProps: any) => any;
 };
 
 const AddCartButton = ({
@@ -25,8 +28,11 @@ const AddCartButton = ({
   image,
   price,
   salePrice,
+  color,
+  size,
   fullWidthButton = false,
   sx,
+  onBeforeAdd,
 }: TAddToCartButton) => {
   const dispatch = useAppDispatch();
 
@@ -35,6 +41,20 @@ const AddCartButton = ({
   const user: any = getUserInfo();
 
   const handleAddToCart = () => {
+    let cartProps = {
+      _id,
+      title,
+      image,
+      price,
+      salePrice,
+      color,
+      size,
+    };
+    if (onBeforeAdd) {
+      const result = onBeforeAdd(cartProps);
+      if (!result) return;
+      cartProps = result;
+    }
     if (!user?.userId) {
       Swal.fire({
         title: "Please login",
@@ -50,15 +70,7 @@ const AddCartButton = ({
         }
       });
     } else {
-      const product = {
-        _id,
-        title,
-        image,
-        price,
-        salePrice,
-      };
-
-      dispatch(addToCart(product));
+      dispatch(addToCart(cartProps));
     }
   };
 

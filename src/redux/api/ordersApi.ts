@@ -10,20 +10,25 @@ const orderApi = baseApi.injectEndpoints({
       }),
     }),
     getUserOrder: build.query({
-      query: (userId) => ({
-        url: `/orders/${userId}`,
-        method: "GET",
-      }),
+      query: (userId) => {
+        return {
+          url: `/orders/user/${userId}`,
+          method: "GET",
+        };
+      },
     }),
     getAllOrders: build.query({
-      query: () => ({
+      query: (query) => ({
         url: "/orders",
+        method: "GET",
+        params: query,
       }),
     }),
     updateOrderStatus: build.mutation({
-      query: (id) => ({
-        url: `/orders/${id}`,
+      query: ({ id, status }) => ({
+        url: `/orders/${id}/status`,
         method: "PATCH",
+        body: { status },
       }),
     }),
   }),

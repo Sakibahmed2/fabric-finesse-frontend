@@ -33,7 +33,6 @@ const CreateProduct = () => {
       const res: any = await addProduct(values);
       if (res?.data?.success) {
         toast.success(res?.data?.message, { id: toastId });
-        console.log(res);
       }
     } catch (err) {
       console.log(err);

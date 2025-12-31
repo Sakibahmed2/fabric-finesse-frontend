@@ -1,6 +1,8 @@
 "use client";
 
 import { useGetAllOrdersQuery } from "@/redux/api/ordersApi";
+import { useGetAllProductsQuery } from "@/redux/api/productsApi";
+import { useGetAllUsersQuery } from "@/redux/api/usersApi";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { SparkLineChart } from "@mui/x-charts/SparkLineChart";
 
@@ -12,15 +14,27 @@ import LineChartStatistics from "@/components/Dashboard/LineChart/LineChartStati
 import { Gauge } from "@mui/x-charts/Gauge";
 
 const AdminDashboardPage = () => {
-  const { data, isLoading } = useGetAllOrdersQuery({});
 
+  // Fetch orders, products, and users
+  const { data: ordersData, isLoading: ordersLoading } = useGetAllOrdersQuery({});
+  const { data: productsData, isLoading: productsLoading } = useGetAllProductsQuery({});
+  const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery({});
+
+  const isLoading = ordersLoading || productsLoading || usersLoading;
   if (isLoading) {
     return <p>Loading...</p>;
   }
 
-  const orderData = data?.data;
+  // Extract counts
+  const orderCount = ordersData?.data?.pagination?.total || 0;
+  const productCount = productsData?.data?.pagination?.total || 0;
+  const userCount = usersData?.data?.pagination?.total || 0;
 
-  console.log(orderData);
+  // Calculate total revenue (sum of order totals)
+  const totalRevenue = Array.isArray(ordersData?.data?.result)
+    ? ordersData.data.result.reduce((sum: any, order: any) => sum + (order.total || 0), 0)
+    : 0;
+
 
   return (
     <div>
@@ -33,8 +47,8 @@ const AdminDashboardPage = () => {
               <BarChartIcon />
             </span>
             <div>
-              <p className="text-xl">132k</p>
-              <span className="text-gray-400 text-sm">Sale</span>
+              <p className="text-xl">{orderCount}</p>
+              <span className="text-gray-400 text-sm">Orders</span>
             </div>
           </div>
 
@@ -43,8 +57,8 @@ const AdminDashboardPage = () => {
               <GroupIcon />
             </span>
             <div>
-              <p className="text-xl">6.542k</p>
-              <span className="text-gray-400 text-sm">Customers</span>
+              <p className="text-xl">{userCount}</p>
+              <span className="text-gray-400 text-sm">Users</span>
             </div>
           </div>
 
@@ -53,7 +67,7 @@ const AdminDashboardPage = () => {
               <ShoppingCartIcon />
             </span>
             <div>
-              <p className="text-xl">1.234k</p>
+              <p className="text-xl">{productCount}</p>
               <span className="text-gray-400 text-sm">Products</span>
             </div>
           </div>
@@ -63,7 +77,7 @@ const AdminDashboardPage = () => {
               <BarChartIcon />
             </span>
             <div>
-              <p className="text-xl">324.2k</p>
+              <p className="text-xl">${totalRevenue.toLocaleString()}</p>
               <span className="text-gray-400 text-sm">Revenue</span>
             </div>
           </div>

@@ -23,7 +23,6 @@ const EditProductModal = ({ open, setOpen, id }: TModalPageProps & { id: string 
 
     const product = data?.data
 
-    console.log(product)
 
 
     const handleSubmit = async (data: any) => {

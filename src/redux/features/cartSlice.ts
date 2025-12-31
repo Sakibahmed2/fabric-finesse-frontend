@@ -6,6 +6,9 @@ type TCart = {
   title: string;
   price: number;
   salePrice?: number | null;
+  color?: string;
+  size?: string;
+  image: string;
 };
 
 type TInitialState = {

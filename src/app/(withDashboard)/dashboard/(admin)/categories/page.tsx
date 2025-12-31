@@ -5,72 +5,55 @@ import EditCategoriesModal from "@/components/Dashboard/Categories/EditCategorie
 import AddProductModal from "@/components/Dashboard/Products/AddProductModal";
 import EditProductModal from "@/components/Dashboard/Products/EditProductModal";
 import FFLoading from "@/components/ui/Loading/FFLoading";
+import { useDeleteCategoryMutation, useGetAllCategoriesQuery } from "@/redux/api/categoriesApi";
 import { useGetAllProductsQuery } from "@/redux/api/productsApi";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, FormControl, InputLabel, MenuItem, Rating, Select, Stack, TextField, Typography } from "@mui/material";
+import Pagination from '@mui/material/Pagination';
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const CategoryPage = () => {
     const [open, setOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
-    const [productId, setProductId] = useState<string>("");
-    const { data, isLoading } = useGetAllProductsQuery({});
+    const [categoryId, setCategoryId] = useState<string>("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
 
-    const products = data?.data;
+    const { data, isLoading } = useGetAllCategoriesQuery({
+        search: searchTerm,
+        page,
+        limit,
+    });
+    const [deleteCategory] = useDeleteCategoryMutation();
 
-    const handleDelete = (id: string) => {
-        console.log(id);
+    const categories = data?.data?.result || [];
+
+    const handleDelete = async (id: string) => {
+        const toastId = toast.loading("Deleting category...");
+        try {
+            const res = await deleteCategory(id).unwrap();
+            if (res?.success) {
+                toast.success("Category deleted successfully!", { id: toastId });
+            } else {
+                toast.error("Failed to delete category.", { id: toastId });
+            }
+        } catch (err) {
+            console.log(err)
+        }
     };
 
     const handleEditModal = (id: string) => {
         setEditOpen(true);
-        setProductId(id);
+        setCategoryId(id);
     }
 
     const columns: GridColDef[] = [
-        { field: "title", headerName: "Name", flex: 1 },
-        {
-            field: "price",
-            headerName: "Price",
-            flex: 1,
-            renderCell: ({ row }) => {
-                return (
-                    <Box>
-                        {row.sale ? (
-                            <Stack direction={"row"} alignItems={"center"} gap={1}>
-                                <Typography
-                                    fontWeight={600}
-                                    sx={{
-                                        textDecoration: "line-through",
-                                        color: "red",
-                                    }}
-                                >
-                                    ৳ {row.price}{" "}
-                                </Typography>
-                                <Typography fontWeight={600}>৳ {row.salePrice} </Typography>
-                            </Stack>
-                        ) : (
-                            <Typography fontWeight={600}>৳ {row.price}</Typography>
-                        )}
-                    </Box>
-                );
-            },
-        },
-        {
-            field: "rating",
-            headerName: "Rating",
-            flex: 1,
-            renderCell: ({ row }) => {
-                return (
-                    <Box>
-                        <Rating value={row.rating} readOnly size="small" />
-                    </Box>
-                );
-            },
-        },
+        { field: "name", headerName: "Name", flex: 1 },
         {
             field: "action",
             headerName: "Action",
@@ -79,9 +62,9 @@ const CategoryPage = () => {
             align: "center",
             renderCell: ({ row }) => {
                 return (
-                    <Stack direction={"row"} gap={2} alignItems={"center"}>
+                    <Stack direction={"row"} gap={2} alignItems={"center"} justifyContent={'center'}>
                         <Button
-                            onClick={() => setEditOpen(true)}
+                            onClick={() => handleEditModal(row._id)}
                             variant="outlined"
                             color="success"
                             startIcon={<CreateIcon />}
@@ -117,7 +100,7 @@ const CategoryPage = () => {
                     </Typography>
                     <Typography component={'p'} sx={{ fontSize: { xs: 14, sm: 16 } }}>
                         Manage all of your categories here
-                        {products?.length ? ` (${products.length})` : ""}
+                        {categories?.length ? ` (${categories.length})` : ""}
                     </Typography>
                 </Box>
                 <Button
@@ -156,7 +139,11 @@ const CategoryPage = () => {
                             <Box sx={{ width: { xs: '100%', sm: '400px' }, minWidth: 0, mb: { xs: 2, sm: 0 } }}>
                                 <TextField
                                     label="Search here"
-                                    // onChange={(e) => setSearchTerm(e.target.value)}
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        setPage(1);
+                                    }}
                                     fullWidth
                                     size="small"
                                     sx={{ fontSize: { xs: 12, sm: 14 } }}
@@ -189,7 +176,7 @@ const CategoryPage = () => {
                         >
                             <Box sx={{ minWidth: 600, width: { xs: 600, sm: '100%' } }}>
                                 <DataGrid
-                                    rows={products}
+                                    rows={categories}
                                     columns={columns}
                                     getRowId={(row) => row._id}
                                     hideFooter
@@ -199,6 +186,34 @@ const CategoryPage = () => {
                                         width: '100%',
                                     }}
                                 />
+                                {/* MUI Pagination like home products page */}
+                                {data?.data?.pagination?.total && data.data.pagination.total > limit && (
+                                    <Box display="flex" justifyContent="center" mt={3}>
+                                        <Pagination
+                                            count={Math.ceil(data.data.pagination.total / limit)}
+                                            page={page}
+                                            onChange={(_, value) => setPage(value)}
+                                            color="primary"
+                                            shape="rounded"
+                                            showFirstButton
+                                            showLastButton
+                                        />
+                                        <FormControl size="small" sx={{ minWidth: 80, ml: 2 }}>
+                                            <Select
+                                                value={limit}
+                                                onChange={(e) => {
+                                                    setLimit(Number(e.target.value));
+                                                    setPage(1);
+                                                }}
+                                            >
+                                                <MenuItem value={5}>5</MenuItem>
+                                                <MenuItem value={10}>10</MenuItem>
+                                                <MenuItem value={20}>20</MenuItem>
+                                                <MenuItem value={50}>50</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+                                )}
                             </Box>
                         </Box>
                     </Box>
@@ -210,8 +225,8 @@ const CategoryPage = () => {
             {/* Create product modal */}
             <AddCategoriesModal open={open} setOpen={setOpen} />
 
-            {/* Edit product modal */}
-            <EditCategoriesModal open={editOpen} setOpen={setEditOpen} id={productId} />
+            {/* Edit category modal */}
+            <EditCategoriesModal open={editOpen} setOpen={setEditOpen} id={categoryId} />
         </Box>
     );
 };

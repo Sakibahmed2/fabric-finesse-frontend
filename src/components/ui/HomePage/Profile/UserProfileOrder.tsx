@@ -1,65 +1,59 @@
-import React, { useState } from 'react';
-import { Box, Typography, Chip, Button } from '@mui/material';
-
-// Dummy order data
-const initialOrders = [
-    {
-        id: 'ORD-001',
-        product: 'Cotton Shirt',
-        date: '2025-12-20',
-        status: 'pending',
-    },
-    {
-        id: 'ORD-002',
-        product: 'Denim Jeans',
-        date: '2025-12-15',
-        status: 'canceled',
-    },
-    {
-        id: 'ORD-003',
-        product: 'Silk Scarf',
-        date: '2025-12-10',
-        status: 'pending',
-    },
-];
+import { useGetUserOrderQuery } from '@/redux/api/ordersApi';
+import { getUserInfo } from '@/services/authService';
+import { Box, Chip, Typography } from '@mui/material';
+import Image from 'next/image';
+import FFLoading from '../../Loading/FFLoading';
 
 const UserProfileOrder = () => {
-    const [orders, setOrders] = useState(initialOrders);
+    const userInfo = getUserInfo();
+    const { data, isLoading } = useGetUserOrderQuery(userInfo?.userId as string);
 
-    const handleToggleStatus = (id: string) => {
-        setOrders((prev) =>
-            prev.map((order) =>
-                order.id === id && order.status === 'pending'
-                    ? { ...order, status: 'canceled' }
-                    : order
-            )
-        );
-    };
+    if (isLoading) {
+        return <FFLoading />;
+    }
+
+
+    let orderData = data?.data;
+    if (!Array.isArray(orderData)) {
+        orderData = orderData ? [orderData] : [];
+    }
 
     return (
         <Box sx={{ mx: 'auto', mt: 3, bgcolor: '#fff', borderRadius: 2 }}>
             <Typography variant="h6" mb={2}>My Orders</Typography>
-            {orders.length === 0 ? (
+            {orderData.length === 0 ? (
                 <Typography color="text.secondary">No orders found.</Typography>
             ) : (
-                orders.map((order) => (
-                    <Box key={order.id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Box>
-                            <Typography variant="subtitle2">Order ID: {order.id}</Typography>
-                            <Typography variant="body2">Product: {order.product}</Typography>
-                            <Typography variant="body2">Date: {order.date}</Typography>
+                orderData?.map((order: any) => (
+                    <Box key={order._id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 1 }}>
+                        <Typography variant="subtitle2" mb={1}>Order ID: {order.order_id}</Typography>
+                        <Typography variant="body2" mb={1}>Placed: {new Date(order.createdAt).toLocaleDateString()}</Typography>
+                        <Typography variant="body2" mb={1}>Status: <Chip label={order.status} color={order.status === 'pending' ? 'warning' : 'success'} size="small" /></Typography>
+                        <Typography variant="body2" mb={1}>Address: {order.address}</Typography>
+                        <Box sx={{ mt: 1 }}>
+                            {order.items.map((item: any, idx: number) => (
+                                <Box key={item.product_id?._id || idx} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, p: 1, bgcolor: '#fafafa', borderRadius: 1 }}>
+                                    {item.product_id?.images && item.product_id.images[0] && (
+                                        <Image src={item.product_id.images[0]} alt={item.product_id.name} width={50} height={50} style={{ borderRadius: 4, objectFit: 'cover' }} />
+                                    )}
+                                    <Box>
+                                        <Typography fontWeight={500}>{item.product_id?.name || 'Product'}</Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Quantity: {item.quantity}
+                                            {item.color && <span> | Color: <b style={{ textTransform: 'capitalize' }}>{item.color}</b></span>}
+                                            {item.size && <span> | Size: <b style={{ textTransform: 'capitalize' }}>{item.size}</b></span>}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Price: ৳ {item.product_id?.price}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            ))}
                         </Box>
-                        <Box display="flex" flexDirection="column" alignItems="flex-end" gap={1}>
-                            <Chip
-                                label={order.status === 'pending' ? 'Pending' : 'Canceled'}
-                                color={order.status === 'pending' ? 'warning' : 'error'}
-                                size="small"
-                            />
-                            {order.status === 'pending' && (
-                                <Button variant="text" color="error" size="small" onClick={() => handleToggleStatus(order.id)}>
-                                    Cancel Order
-                                </Button>
-                            )}
+                        <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant="body2">Subtotal: ৳ {order.subtotal}</Typography>
+                            <Typography variant="body2">Delivery Fee: ৳ {order.delivery_fee}</Typography>
+                            <Typography variant="body2" fontWeight={600}>Total: ৳ {order.total}</Typography>
                         </Box>
                     </Box>
                 ))

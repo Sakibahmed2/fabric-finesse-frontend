@@ -10,7 +10,6 @@ const FlashSalePage = async () => {
 
   const flashSale = data?.result?.filter((item: any) => item.discountPrice);
 
-  console.log({ flashSale })
 
   return (
     <Box pt={15} mb={10}>

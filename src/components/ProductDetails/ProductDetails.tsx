@@ -1,6 +1,8 @@
 'use client'
 
 import AddCartButton from "@/components/ui/AddCartButton/AddCartButton";
+import { FormControl, InputLabel, MenuItem, Select, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import Swal from "sweetalert2";
 import ImageAnimation from "@/components/ui/SingleProductAnimation/ImageAnimation";
 import { TProduct } from "@/types/global";
 import HomeRepairServiceIcon from "@mui/icons-material/HomeRepairService";
@@ -10,14 +12,29 @@ import Image from "next/image";
 import { useState } from "react";
 
 const ProductDetails = ({ product }: { product: TProduct }) => {
-    const { _id, images, price, description, name, discountPrice, category, stock } = product || {};
-    const savings = discountPrice ? price - discountPrice : 0;
-    const savingsPercent = discountPrice && price ? ((savings / price) * 100) : 0;
+    const { _id, images, price, description, name, discountPrice, category, stock, colors = [], sizes = [] } = product || {};
+
+    const [selectedColor, setSelectedColor] = useState<string>("");
+    const [selectedSize, setSelectedSize] = useState<string>("");
 
 
     const [mainImg, setMainImg] = useState(
         images && images.length > 0 ? images[0] : "/placeholder.png"
     );
+
+    const handleAddToCart = (cartProps: any) => {
+        if (colors.length > 0 && !selectedColor) {
+            Swal.fire({ icon: 'warning', title: 'Please select a color!' });
+            return;
+        }
+        if (sizes.length > 0 && !selectedSize) {
+            Swal.fire({ icon: 'warning', title: 'Please select a size!' });
+            return;
+        }
+        cartProps.color = selectedColor;
+        cartProps.size = selectedSize;
+        return cartProps;
+    };
 
     return (
         <Box my={15}>
@@ -163,6 +180,43 @@ const ProductDetails = ({ product }: { product: TProduct }) => {
                                         {/* <Rating name="simple-controlled" value={rating} /> */}
                                     </Box>
                                 </Stack>
+
+                                {/* Color selection as buttons */}
+                                {colors.length > 0 && (
+                                    <Box sx={{ mt: 2 }}>
+                                        <Typography fontWeight={600} mb={1}>Colors:</Typography>
+                                        <ToggleButtonGroup
+                                            value={selectedColor}
+                                            exclusive
+                                            onChange={(_, value) => value && setSelectedColor(value)}
+                                            aria-label="color selection"
+                                        >
+                                            {colors.map((color) => (
+                                                <ToggleButton key={color} value={color} aria-label={color} sx={{ textTransform: 'capitalize', mx: 0.5 }}>
+                                                    {color}
+                                                </ToggleButton>
+                                            ))}
+                                        </ToggleButtonGroup>
+                                    </Box>
+                                )}
+                                {/* Size selection as buttons */}
+                                {sizes.length > 0 && (
+                                    <Box sx={{ mt: 2 }}>
+                                        <Typography fontWeight={600} mb={1}>Sizes:</Typography>
+                                        <ToggleButtonGroup
+                                            value={selectedSize}
+                                            exclusive
+                                            onChange={(_, value) => value && setSelectedSize(value)}
+                                            aria-label="size selection"
+                                        >
+                                            {sizes.map((size) => (
+                                                <ToggleButton key={size} value={size} aria-label={size} sx={{ textTransform: 'capitalize', mx: 0.5 }}>
+                                                    {size}
+                                                </ToggleButton>
+                                            ))}
+                                        </ToggleButtonGroup>
+                                    </Box>
+                                )}
                                 {/* Category */}
                                 {category && (
                                     <Typography component="p" fontSize={16} color="text.secondary" mt={1}>
@@ -184,12 +238,16 @@ const ProductDetails = ({ product }: { product: TProduct }) => {
                                     Shipping & Return
                                 </Typography>
 
+
                                 <AddCartButton
                                     _id={_id}
                                     price={price}
                                     salePrice={discountPrice}
                                     title={name}
                                     image={images && images.length > 0 ? images[0] : "/placeholder.png"}
+                                    color={selectedColor}
+                                    size={selectedSize}
+                                    onBeforeAdd={handleAddToCart}
                                 />
                             </Box>
                         </Stack>

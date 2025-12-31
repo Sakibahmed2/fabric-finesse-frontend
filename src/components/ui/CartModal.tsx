@@ -1,7 +1,8 @@
 'use client'
 
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { Badge, Box, Drawer, IconButton, useMediaQuery, Button, Divider } from "@mui/material";
+import { Badge, Box, Drawer, IconButton, useMediaQuery, Button, Divider, Typography } from "@mui/material";
+import Image from "next/image";
 import { useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { deleteCart } from "@/redux/features/cartSlice";
@@ -74,16 +75,31 @@ const CartModal = () => {
                         ) : (
                             <>
                                 {carts.map((item) => (
-                                    <Box key={item._id || item.title} sx={{ mb: 2, p: 1, borderRadius: 2, bgcolor: '#f5f5f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Box>
-                                            <div style={{ fontWeight: 500 }}>{item.title}</div>
-                                            <div style={{ color: '#666', fontSize: 14 }}>
-                                                Price: ${item.salePrice ?? item.price}
-                                            </div>
+                                    <Box key={item._id || item.title} sx={{ mb: 2, p: 1, borderRadius: 2, bgcolor: '#f5f5f5', display: 'flex', alignItems: 'center', gap: 2 }}>
+                                        {/* Product Image */}
+                                        <Box sx={{ minWidth: 60, minHeight: 60, mr: 1, display: 'flex', alignItems: 'center' }}>
+                                            {item.image && (
+                                                <Image src={item.image} alt={item.title} width={60} height={60} style={{ objectFit: 'cover', borderRadius: 8 }} />
+                                            )}
                                         </Box>
-                                        <div style={{ fontWeight: 600 }}>
+                                        {/* Product Info */}
+                                        <Box sx={{ flex: 1 }}>
+                                            <Typography fontWeight={500}>{item.title}</Typography>
+                                            <Typography color="text.secondary" fontSize={14}>
+                                                Price: ${item.salePrice ?? item.price}
+                                            </Typography>
+                                            {/* Color and Size */}
+                                            {(item.color || item.size) && (
+                                                <Typography fontSize={13} color="text.secondary" mt={0.5}>
+                                                    {item.color && <span>Color: <b style={{ textTransform: 'capitalize' }}>{item.color}</b></span>}
+                                                    {item.color && item.size && <span> | </span>}
+                                                    {item.size && <span>Size: <b style={{ textTransform: 'capitalize' }}>{item.size}</b></span>}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                        <Typography fontWeight={600}>
                                             ${item.salePrice ?? item.price}
-                                        </div>
+                                        </Typography>
                                     </Box>
                                 ))}
                                 <Divider />
