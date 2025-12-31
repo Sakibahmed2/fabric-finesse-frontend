@@ -1,9 +1,8 @@
 export const setToLocalStorage = (key: string, accessToken: string) => {
   if (!key || typeof window === "undefined") {
-    return "";
+    return;
   }
-
-  return localStorage.setItem(key, accessToken);
+  localStorage.setItem(key, accessToken);
 };
 
 export const getFormLocalStorage = (key: string) => {

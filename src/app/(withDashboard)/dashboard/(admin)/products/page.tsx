@@ -3,24 +3,53 @@
 import AddProductModal from "@/components/Dashboard/Products/AddProductModal";
 import EditProductModal from "@/components/Dashboard/Products/EditProductModal";
 import FFLoading from "@/components/ui/Loading/FFLoading";
-import { useGetAllProductsQuery } from "@/redux/api/productsApi";
+import { useDeleteProductMutation, useGetAllProductsQuery } from "@/redux/api/productsApi";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, FormControl, InputLabel, MenuItem, Rating, Select, Stack, TextField, Typography } from "@mui/material";
+import Pagination from '@mui/material/Pagination';
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const AllProductsPage = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [productId, setProductId] = useState<string>("");
-  const { data, isLoading } = useGetAllProductsQuery({});
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const products = data?.data;
 
-  const handleDelete = (id: string) => {
-    console.log(id);
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+
+  const { data, isLoading } = useGetAllProductsQuery({
+    search: searchTerm,
+    sortBy,
+    sortOrder,
+    page,
+    limit,
+  });
+  const [deleteProduct] = useDeleteProductMutation();
+
+
+  const products = data?.data?.result
+
+  const handleDelete = async (id: string) => {
+    const toastId = toast.loading("Deleting product...");
+    try {
+      const res = await deleteProduct(id).unwrap();
+      if (res?.success) {
+        toast.success("Product deleted successfully!", { id: toastId });
+      } else {
+        toast.error("Failed to delete product.", { id: toastId });
+      }
+    } catch (err) {
+      console.log(err)
+    }
   };
 
   const handleEditModal = (id: string) => {
@@ -29,45 +58,52 @@ const AllProductsPage = () => {
   }
 
   const columns: GridColDef[] = [
-    { field: "title", headerName: "Name", flex: 1 },
+    {
+      field: "image",
+      headerName: "Image",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Box>
+          {row.images && row.images.length > 0 ? (
+            <Image src={row.images[0]} alt={row.name} width={50} height={50} style={{ objectFit: "cover", borderRadius: 4 }} />
+          ) : (
+            <Typography variant="body2" color="text.secondary">No Image</Typography>
+          )}
+        </Box>
+      ),
+    },
+    { field: "name", headerName: "Name", flex: 1 },
     {
       field: "price",
       headerName: "Price",
       flex: 1,
-      renderCell: ({ row }) => {
-        return (
-          <Box>
-            {row.sale ? (
-              <Stack direction={"row"} alignItems={"center"} gap={1}>
-                <Typography
-                  fontWeight={600}
-                  sx={{
-                    textDecoration: "line-through",
-                    color: "red",
-                  }}
-                >
-                  ৳ {row.price}{" "}
-                </Typography>
-                <Typography fontWeight={600}>৳ {row.salePrice} </Typography>
-              </Stack>
-            ) : (
-              <Typography fontWeight={600}>৳ {row.price}</Typography>
-            )}
-          </Box>
-        );
-      },
+      renderCell: ({ row }) => (
+        <Box>
+          <Typography fontWeight={600}>৳ {row.price}</Typography>
+        </Box>
+      ),
     },
     {
-      field: "rating",
-      headerName: "Rating",
+      field: "discountPrice",
+      headerName: "Discount Price",
       flex: 1,
-      renderCell: ({ row }) => {
-        return (
-          <Box>
-            <Rating value={row.rating} readOnly size="small" />
-          </Box>
-        );
-      },
+      renderCell: ({ row }) => (
+        <Box>
+          {row.discountPrice ? (
+            <Typography fontWeight={600} color="primary">৳ {row.discountPrice}</Typography>
+          ) : (
+            <Typography variant="body2" color="text.secondary">-</Typography>
+          )}
+        </Box>
+      ),
+    },
+    {
+      field: "stock",
+      headerName: "Stock",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Typography fontWeight={600}>{row.stock ?? '-'}</Typography>
+      ),
     },
     {
       field: "action",
@@ -75,28 +111,26 @@ const AllProductsPage = () => {
       flex: 1,
       headerAlign: "center",
       align: "center",
-      renderCell: ({ row }) => {
-        return (
-          <Stack direction={"row"} gap={2} alignItems={"center"}>
-            <Button
-              onClick={() => setEditOpen(true)}
-              variant="outlined"
-              color="success"
-              startIcon={<CreateIcon />}
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={() => handleDelete(row._id)}
-              variant="outlined"
-              color="warning"
-              startIcon={<DeleteIcon />}
-            >
-              Delete
-            </Button>
-          </Stack>
-        );
-      },
+      renderCell: ({ row }) => (
+        <Stack direction={"row"} gap={2} alignItems={"center"}>
+          <Button
+            onClick={() => handleEditModal(row._id)}
+            variant="outlined"
+            color="success"
+            startIcon={<CreateIcon />}
+          >
+            Edit
+          </Button>
+          <Button
+            onClick={() => handleDelete(row._id)}
+            variant="outlined"
+            color="warning"
+            startIcon={<DeleteIcon />}
+          >
+            Delete
+          </Button>
+        </Stack>
+      ),
     },
   ];
 
@@ -154,10 +188,11 @@ const AllProductsPage = () => {
               <Box sx={{ width: { xs: '100%', sm: '400px' }, minWidth: 0, mb: { xs: 2, sm: 0 } }}>
                 <TextField
                   label="Search here"
-                  // onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   fullWidth
                   size="small"
                   sx={{ fontSize: { xs: 12, sm: 14 } }}
+
                 />
               </Box>
 
@@ -165,12 +200,21 @@ const AllProductsPage = () => {
                 <FormControl fullWidth size="small">
                   <InputLabel>Sort by date</InputLabel>
                   <Select
-                    // value={sortBy}
+                    value={`${sortBy}-${sortOrder}`}
                     label="Sort by date"
-                  // onChange={(e) => setSortBy(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "createdAt-asc") {
+                        setSortBy("createdAt");
+                        setSortOrder("asc");
+                      } else {
+                        setSortBy("createdAt");
+                        setSortOrder("desc");
+                      }
+                    }}
                   >
-                    <MenuItem value={"createdAt"}>Oldest First</MenuItem>
-                    <MenuItem value={"-createdAt"}>Newest First</MenuItem>
+                    <MenuItem value="createdAt-desc">Newest First</MenuItem>
+                    <MenuItem value="createdAt-asc">Oldest First</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -189,14 +233,42 @@ const AllProductsPage = () => {
                 <DataGrid
                   rows={products}
                   columns={columns}
-                  getRowId={(row) => row._id}
                   hideFooter
+                  getRowId={(row) => row._id}
                   autoHeight
                   sx={{
                     fontSize: { xs: 12, sm: 14 },
                     width: '100%',
                   }}
                 />
+                {/* MUI Pagination like home products page */}
+                {data?.data?.pagination?.total && data.data.pagination.total > limit && (
+                  <Box display="flex" justifyContent="center" mt={3}>
+                    <Pagination
+                      count={Math.ceil(data.data.pagination.total / limit)}
+                      page={page}
+                      onChange={(_, value) => setPage(value)}
+                      color="primary"
+                      shape="rounded"
+                      showFirstButton
+                      showLastButton
+                    />
+                    <FormControl size="small" sx={{ minWidth: 80, ml: 2 }}>
+                      <Select
+                        value={limit}
+                        onChange={(e) => {
+                          setLimit(Number(e.target.value));
+                          setPage(1);
+                        }}
+                      >
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                        <MenuItem value={50}>50</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>

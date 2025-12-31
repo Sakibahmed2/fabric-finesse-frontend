@@ -1,3 +1,4 @@
+import { get } from "http";
 import { baseApi } from "./baseApi";
 
 export const productsApi = baseApi.injectEndpoints({
@@ -21,7 +22,39 @@ export const productsApi = baseApi.injectEndpoints({
         };
       },
     }),
+    getProductById: build.query({
+      query: (id) => {
+        console.log({ id });
+        return {
+          url: `/products/${id}`,
+          method: "GET",
+        };
+      },
+    }),
+    updateProduct: build.mutation({
+      query: ({ id, ...data }) => {
+        return {
+          url: `/products/${id}`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }),
+    deleteProduct: build.mutation({
+      query: (id) => {
+        return {
+          url: `/products/${id}`,
+          method: "DELETE",
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetAllProductsQuery, useCreateProductMutation } = productsApi;
+export const {
+  useGetAllProductsQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
+  useGetProductByIdQuery,
+} = productsApi;

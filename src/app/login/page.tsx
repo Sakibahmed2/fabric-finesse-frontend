@@ -25,15 +25,16 @@ const LoginPage = () => {
     const toastId = toast.loading("loading....");
 
     try {
-      const res: any = await loginUser(values);
-      if (res.data.success) {
-        storeUserInfo({ accessToken: res?.data?.token });
-        toast.success(res.data.message, { id: toastId });
+      const res: any = await loginUser(values).unwrap();
+      if (res.success && res.data.token) {
+        storeUserInfo({ accessToken: res.data.token });
+        toast.success(res.message, { id: toastId });
         router.push("/");
+      } else {
+        toast.error("Login failed: No token received", { id: toastId });
       }
-      console.log(res);
     } catch (err) {
-      console.log(err);
+      toast.error("Login failed", { id: toastId });
     }
   };
 

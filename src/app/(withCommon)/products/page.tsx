@@ -70,7 +70,7 @@ const ProductsPage = () => {
     minPrice: priceRange[0],
     maxPrice: priceRange[1],
     page,
-    limit
+    limit,
   };
   if (activeSearch) {
     queryParams.search = activeSearch;

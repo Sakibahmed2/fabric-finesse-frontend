@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import {
   FieldValues,
   FormProvider,
@@ -33,6 +33,13 @@ const FabricForm = ({
 
   const methods = useForm(formConfig);
   const { handleSubmit, reset } = methods;
+
+  // Add this effect to update form values when defaultValues change
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
 
   const submit: SubmitHandler<FieldValues> = (data) => {
     onSubmit(data);
