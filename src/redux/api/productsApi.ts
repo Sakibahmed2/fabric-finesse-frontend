@@ -4,7 +4,6 @@ export const productsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     createProduct: build.mutation({
       query: (data) => {
-        console.log(data);
         return {
           url: "/products",
           method: "POST",
@@ -13,10 +12,14 @@ export const productsApi = baseApi.injectEndpoints({
       },
     }),
     getAllProducts: build.query({
-      query: () => ({
-        url: "/products",
-        method: "GET",
-      }),
+      query: (query) => {
+        console.log({ query });
+        return {
+          url: "/products",
+          method: "GET",
+          params: query,
+        };
+      },
     }),
   }),
 });

@@ -12,7 +12,11 @@ const ClothCard = ({ product }: { product: TProduct }) => {
     <Box
       sx={{
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        p: 1
+        p: 1,
+        height: "auto",
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
       }}
     >
       <Box position="relative">
@@ -41,7 +45,7 @@ const ClothCard = ({ product }: { product: TProduct }) => {
           alt="products"
         />
       </Box>
-      <Box mt={1}>
+      <Box mt={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Typography component="p" fontSize={20}>
           {
             product?.name
@@ -67,7 +71,7 @@ const ClothCard = ({ product }: { product: TProduct }) => {
 
 
         </Stack>
-        <Box>
+        <Box sx={{ mt: 'auto' }}>
           <AddCartButton
             _id={product._id}
             title={product.name}

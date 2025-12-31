@@ -15,9 +15,7 @@ const TrendingProducts = async () => {
   );
   const { data } = await res.json();
 
-  const trendingProducts = data?.result?.sort(
-    (a: TProduct, b: TProduct) => b.rating - a.rating
-  );
+  const trendingProducts = data?.result
 
   return (
     <Box my={20}>

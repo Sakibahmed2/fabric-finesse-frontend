@@ -34,8 +34,6 @@ const AddCartButton = ({
 
   const user: any = getUserInfo();
 
-  console.log(user?.userId);
-
   const handleAddToCart = () => {
     if (!user?.userId) {
       Swal.fire({

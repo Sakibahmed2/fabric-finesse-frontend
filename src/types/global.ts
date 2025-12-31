@@ -16,6 +16,8 @@ export type TProduct = {
   description: string;
   images: string[];
   stock: number;
+  colors: string[];
+  sizes: string[];
 };
 
 export type TUserInfo = {

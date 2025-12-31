@@ -17,24 +17,47 @@ const FlashSale = async () => {
   const saleProducts = data?.result?.filter((product: any) => product.discountPrice);
 
   return (
-    <Box my={20}>
+    <Box sx={{
+      mb: 20,
+      mt: 10
+    }}>
       <Container>
         <Box>
-          <Stack direction={"row"} justifyContent="space-between">
-            <Typography variant="h4" component="h1" fontWeight={600}>
-              Flash sale
-            </Typography>
-            <Button
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-              }}
-              component={Link}
-              href="/flash-sale"
-            >
-              See All <ArrowCircleRightOutlinedIcon />
-            </Button>
+          <Stack
+            direction={{
+              md: "row",
+            }}
+            justifyContent="space-between">
+            <Box>
+              <Typography variant="h4" component="h1" fontWeight={600}>
+                Sale Products
+              </Typography>
+              <Typography
+                component="p"
+                width={{
+                  md: "50%",
+                }}
+                mt={2}
+              >
+                Don&apos;t miss out on our exclusive flash sale! Enjoy limited-time
+                discounts on a curated selection of fashion essentials.
+              </Typography>
+            </Box>
+            <Box>
+              <Button
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mt: 2,
+                }}
+                component={Link}
+                href="/flash-sale"
+              >
+                See All <ArrowCircleRightOutlinedIcon />
+              </Button>
+            </Box>
+
           </Stack>
         </Box>
         <Box mt={4}>

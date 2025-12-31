@@ -47,10 +47,7 @@ const HeroSection = () => {
     >
       <Container>
         <Stack
-          pt={{
-            md: 20,
-            xs: 25,
-          }}
+          pt={15}
         >
           <motion.div
             variants={textAnimation}
