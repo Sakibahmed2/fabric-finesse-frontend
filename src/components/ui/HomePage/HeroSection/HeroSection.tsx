@@ -25,10 +25,12 @@ const carouselAnimation = {
   hidden: {
     scale: 0.2,
     y: 300,
+    opacity: 0,
   },
   visible: {
     y: 0,
     scale: 1,
+    opacity: 1,
     transition: {
       delay: 0.9,
       type: "spring",
@@ -47,7 +49,7 @@ const HeroSection = () => {
     >
       <Container>
         <Stack
-          pt={15}
+          pt={5}
         >
           <motion.div
             variants={textAnimation}

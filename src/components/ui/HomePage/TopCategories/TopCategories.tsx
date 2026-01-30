@@ -11,7 +11,7 @@ const TopCategories = () => {
 
   if (isLoading) return <FFLoading />
 
-  const categories = (data.data?.result || []).slice(0, 12);
+  const categories = (data?.data?.result || []).slice(0, 12);
 
   return (
 

@@ -29,7 +29,10 @@ const FlashSale = async () => {
             }}
             justifyContent="space-between">
             <Box>
-              <Typography variant="h4" component="h1" fontWeight={600}>
+              <Typography variant="h4" component="h1" fontWeight={600} fontSize={{
+                xs: 30,
+                md: 40
+              }}>
                 Sale Products
               </Typography>
               <Typography
@@ -38,6 +41,10 @@ const FlashSale = async () => {
                   md: "50%",
                 }}
                 mt={2}
+                fontSize={{
+                  xs: 14,
+                  md: 16
+                }}
               >
                 Don&apos;t miss out on our exclusive flash sale! Enjoy limited-time
                 discounts on a curated selection of fashion essentials.

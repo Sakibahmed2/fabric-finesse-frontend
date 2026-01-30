@@ -48,12 +48,9 @@ const ProductsPage = () => {
   if (category && !selectedCategories.includes(category)) {
     setSelectedCategories([category]);
   }
-  const navigate = useRouter();
 
   // Reset filter handler
   const handleResetFilters = () => {
-    navigate.push('/products');
-    navigate.refresh();
     setPriceRange([0, 99999]);
     setSelectedCategories([]);
     setSelectedSizes([]);
@@ -103,7 +100,8 @@ const ProductsPage = () => {
 
   return (
     <Box sx={{
-      my: 10,
+      mt: 2,
+      mb: 10,
       maxWidth: {
         md: '85%',
         xs: '100%'
@@ -498,7 +496,7 @@ const ProductsPage = () => {
               sx={{ width: "100%" }}
             >
               {data?.map((product: any) => (
-                <Grid item xs={6} md={3} key={product._id} display="flex" justifyContent="center">
+                <Grid item xs={6} md={4} lg={3} key={product._id} display="flex" justifyContent="center">
                   <ClothCard key={product._id} product={product} />
                 </Grid>
               ))}

@@ -12,7 +12,7 @@ const FlashSalePage = async () => {
 
 
   return (
-    <Box pt={15} mb={10}>
+    <Box pt={2} mb={10}>
       <Container>
         {/* <Box textAlign={"center"}>
           <CountdownTimer durationInMinutes={30} />

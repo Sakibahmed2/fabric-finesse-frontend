@@ -28,7 +28,10 @@ const TrendingProducts = async () => {
             justifyContent="space-between"
           >
             <Box>
-              <Typography variant="h4" component="h1" fontWeight={600}>
+              <Typography variant="h4" component="h1" fontWeight={600} fontSize={{
+                xs: 30,
+                md: 40
+              }}>
                 Trending products
               </Typography>
               <Typography
@@ -37,6 +40,10 @@ const TrendingProducts = async () => {
                   md: "50%",
                 }}
                 mt={2}
+                fontSize={{
+                  xs: 14,
+                  md: 16
+                }}
               >
                 Explore our curated selection of trending products, featuring
                 the latest in fashion-forward styles and seasonal favorites.
