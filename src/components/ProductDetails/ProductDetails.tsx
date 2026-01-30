@@ -37,7 +37,7 @@ const ProductDetails = ({ product }: { product: TProduct }) => {
     };
 
     return (
-        <Box my={15}>
+        <Box mt={5} mb={15}>
             <Container>
                 <Stack direction={{ md: "row" }} gap={5} sx={{
                     borderBottom: '2px solid lightgray',
