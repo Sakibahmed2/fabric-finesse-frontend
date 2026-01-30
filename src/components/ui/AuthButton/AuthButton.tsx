@@ -1,7 +1,6 @@
 "use client";
 
-import { getUserInfo } from "@/services/authService";
-import { removeFormLocalStorage } from "@/utils/local-storage";
+import { getUserInfo, removeUserInfo } from "@/services/authService";
 import { Box, Button, Tooltip, Menu, MenuItem, Avatar, ListItemIcon, ListItemText } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,7 +31,7 @@ const AuthButton = () => {
   };
 
   const handleLogout = () => {
-    removeFormLocalStorage("accessToken");
+    removeUserInfo(); // Removes from both localStorage and cookie
     handleClose();
     router.refresh();
   };

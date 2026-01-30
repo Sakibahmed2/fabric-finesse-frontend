@@ -38,6 +38,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { TProduct } from "@/types/global";
 import NavCartModal from "./NavCartModal";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const AuthButton = dynamic(
     () => import("@/components/ui/AuthButton/AuthButton"),
@@ -56,10 +57,15 @@ const NewNav = () => {
 
     const carts = useAppSelector((state) => state.cart.carts);
 
-    // Fetch products for search
-    const { data: productsData } = useGetAllProductsQuery({
-        search: searchQuery,
+    // Debounce search query to prevent excessive API calls
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+    // Fetch products for search - only when debounced query changes
+    const { data: productsData, isFetching: isSearching } = useGetAllProductsQuery({
+        search: debouncedSearchQuery,
         limit: 5,
+    }, {
+        skip: !debouncedSearchQuery, // Skip query if search is empty
     });
 
     useEffect(() => {

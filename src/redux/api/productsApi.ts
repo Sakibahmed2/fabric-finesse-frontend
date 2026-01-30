@@ -1,4 +1,3 @@
-import { get } from "http";
 import { baseApi } from "./baseApi";
 
 export const productsApi = baseApi.injectEndpoints({
@@ -11,6 +10,7 @@ export const productsApi = baseApi.injectEndpoints({
           body: data,
         };
       },
+      invalidatesTags: ["Product"],
     }),
     getAllProducts: build.query({
       query: (query) => {
@@ -20,6 +20,7 @@ export const productsApi = baseApi.injectEndpoints({
           params: query,
         };
       },
+      providesTags: ["Product"],
     }),
     getProductById: build.query({
       query: (id) => {
@@ -28,6 +29,7 @@ export const productsApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      providesTags: ["Product"],
     }),
     updateProduct: build.mutation({
       query: ({ id, ...data }) => {
@@ -37,6 +39,7 @@ export const productsApi = baseApi.injectEndpoints({
           body: data,
         };
       },
+      invalidatesTags: ["Product"],
     }),
     deleteProduct: build.mutation({
       query: (id) => {
@@ -45,6 +48,7 @@ export const productsApi = baseApi.injectEndpoints({
           method: "DELETE",
         };
       },
+      invalidatesTags: ["Product"],
     }),
   }),
 });

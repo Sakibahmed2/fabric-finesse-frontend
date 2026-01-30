@@ -4,7 +4,7 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
     // baseUrl: "https://fabric-finesse-backend.vercel.app/api/v1",
-    baseUrl: "http://localhost:5000/api/v1",
+    baseUrl: process.env.NEXT_PUBLIC_API_URL,
   }),
   endpoints: () => ({}),
   tagTypes: ["Product", "Category", "Order", "User"],

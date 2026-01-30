@@ -145,8 +145,10 @@ const CheckoutPage = () => {
 
   return (
     <Container sx={{
-      my: 12
+      mb: 12,
+      mt: 5
     }}>
+
       <Stack direction={'row'} justifyContent={'center'} mb={5}>
         <Typography variant="h4" fontWeight={600} mb={2} alignItems={'center'} sx={{
           color: 'black'
@@ -154,10 +156,18 @@ const CheckoutPage = () => {
           Place Your Order
         </Typography>
       </Stack>
-      <Stack direction={'row'}>
+
+
+      <Stack direction={{
+        xs: 'column',
+        md: 'row'
+      }} spacing={4}>
         {/* Checkout form */}
         <Box sx={{
-          width: "50%",
+          width: {
+            xs: '100%',
+            md: '50%'
+          },
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           p: 2,
         }} >
@@ -195,10 +205,12 @@ const CheckoutPage = () => {
         {/* Order summary */}
         <Box
           sx={{
-            width: "50%",
+            width: {
+              xs: '100%',
+              md: '50%'
+            },
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             p: 2,
-            ml: 4,
             borderRadius: 2,
             bgcolor: '#fff',
             height: 'fit-content',
@@ -241,11 +253,11 @@ const CheckoutPage = () => {
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography>Subtotal</Typography>
-                  <Typography>৳ {subtotal}</Typography>
+                  <Typography>৳ {subtotal.toFixed(2)}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography>Shipping</Typography>
-                  <Typography>৳ {shipping}</Typography>
+                  <Typography>৳ {shipping.toFixed(2)}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, mt: 2 }}>
                   <Typography>Total</Typography>
@@ -256,6 +268,7 @@ const CheckoutPage = () => {
           )}
         </Box>
       </Stack>
+
     </Container >
   );
 };

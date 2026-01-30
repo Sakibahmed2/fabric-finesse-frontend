@@ -10,10 +10,21 @@ import {
     Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { deleteCart } from "@/redux/features/cartSlice";
+import {
+    clearCart,
+    incrementQuantity,
+    decrementQuantity,
+    removeFromCart,
+    selectCartTotal,
+    selectCartItemsCount
+} from "@/redux/features/cartSlice";
+import Link from "next/link";
 
 interface NavCartModalProps {
     open: boolean;
@@ -24,21 +35,26 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const carts = useAppSelector((state) => state.cart.carts);
-
-    // Calculate total price
-    const total = carts.reduce(
-        (sum, item) => sum + (item.salePrice ?? item.price),
-        0
-    );
+    const total = useAppSelector(selectCartTotal);
+    const itemsCount = useAppSelector(selectCartItemsCount);
 
     const handleClearCart = () => {
-        dispatch(deleteCart());
+        dispatch(clearCart());
     };
 
-    const handleCheckout = () => {
-        router.push("/checkout");
-        onClose();
+    const handleIncrement = (item: { _id: string; color?: string; size?: string }) => {
+        dispatch(incrementQuantity({ _id: item._id, color: item.color, size: item.size }));
     };
+
+    const handleDecrement = (item: { _id: string; color?: string; size?: string }) => {
+        dispatch(decrementQuantity({ _id: item._id, color: item.color, size: item.size }));
+    };
+
+    const handleRemove = (item: { _id: string; color?: string; size?: string }) => {
+        dispatch(removeFromCart({ _id: item._id, color: item.color, size: item.size }));
+    };
+
+
 
     return (
         <Drawer
@@ -70,7 +86,7 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
                     }}
                 >
                     <Typography variant="h6" fontWeight={600}>
-                        Shopping Cart
+                        Shopping Cart {itemsCount > 0 && `(${itemsCount})`}
                     </Typography>
                     <IconButton onClick={onClose} aria-label="close cart">
                         <CloseIcon />
@@ -109,14 +125,14 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
                         <>
                             {carts.map((item, index) => (
                                 <Box
-                                    key={item._id || `${item.title}-${index}`}
+                                    key={`${item._id}-${item.color}-${item.size}-${index}`}
                                     sx={{
                                         mb: 2,
                                         p: 2,
                                         borderRadius: 2,
                                         bgcolor: "#f5f5f5",
                                         display: "flex",
-                                        alignItems: "center",
+                                        alignItems: "flex-start",
                                         gap: 2,
                                     }}
                                 >
@@ -125,8 +141,8 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
                                         <Box
                                             sx={{
                                                 position: "relative",
-                                                width: 60,
-                                                height: 60,
+                                                width: 70,
+                                                height: 70,
                                                 flexShrink: 0,
                                             }}
                                         >
@@ -144,13 +160,22 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
 
                                     {/* Product Info */}
                                     <Box sx={{ flex: 1 }}>
-                                        <Typography
-                                            variant="body1"
-                                            fontWeight={500}
-                                            sx={{ mb: 0.5 }}
-                                        >
-                                            {item.title}
-                                        </Typography>
+                                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                            <Typography
+                                                variant="body1"
+                                                fontWeight={500}
+                                                sx={{ mb: 0.5, flex: 1 }}
+                                            >
+                                                {item.title}
+                                            </Typography>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => handleRemove(item)}
+                                                sx={{ ml: 1, color: "error.main" }}
+                                            >
+                                                <DeleteOutlineIcon fontSize="small" />
+                                            </IconButton>
+                                        </Box>
 
                                         {/* Color and Size */}
                                         {(item.color || item.size) && (
@@ -162,11 +187,7 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
                                                 {item.color && (
                                                     <span>
                                                         Color:{" "}
-                                                        <strong
-                                                            style={{
-                                                                textTransform: "capitalize",
-                                                            }}
-                                                        >
+                                                        <strong style={{ textTransform: "capitalize" }}>
                                                             {item.color}
                                                         </strong>
                                                     </span>
@@ -175,11 +196,7 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
                                                 {item.size && (
                                                     <span>
                                                         Size:{" "}
-                                                        <strong
-                                                            style={{
-                                                                textTransform: "uppercase",
-                                                            }}
-                                                        >
+                                                        <strong style={{ textTransform: "uppercase" }}>
                                                             {item.size}
                                                         </strong>
                                                     </span>
@@ -187,13 +204,60 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
                                             </Typography>
                                         )}
 
+                                        {/* Price */}
                                         <Typography
                                             variant="body2"
                                             color="primary.main"
                                             fontWeight={600}
+                                            sx={{ mb: 1 }}
                                         >
-                                            ${item.salePrice ?? item.price}
+                                            ${(item.salePrice ?? item.price).toFixed(2)}
                                         </Typography>
+
+                                        {/* Quantity Controls */}
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => handleDecrement(item)}
+                                                sx={{
+                                                    border: "1px solid",
+                                                    borderColor: "divider",
+                                                    width: 28,
+                                                    height: 28,
+                                                }}
+                                            >
+                                                <RemoveIcon fontSize="small" />
+                                            </IconButton>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    minWidth: 32,
+                                                    textAlign: "center",
+                                                    fontWeight: 600
+                                                }}
+                                            >
+                                                {item.quantity}
+                                            </Typography>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => handleIncrement(item)}
+                                                sx={{
+                                                    border: "1px solid",
+                                                    borderColor: "divider",
+                                                    width: 28,
+                                                    height: 28,
+                                                }}
+                                            >
+                                                <AddIcon fontSize="small" />
+                                            </IconButton>
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary"
+                                                sx={{ ml: 1 }}
+                                            >
+                                                = ${((item.salePrice ?? item.price) * item.quantity).toFixed(2)}
+                                            </Typography>
+                                        </Box>
                                     </Box>
                                 </Box>
                             ))}
@@ -231,8 +295,9 @@ const NavCartModal: React.FC<NavCartModalProps> = ({ open, onClose }) => {
                                 variant="contained"
                                 color="primary"
                                 fullWidth
-                                onClick={handleCheckout}
                                 size="large"
+                                LinkComponent={Link}
+                                href="/checkout"
                             >
                                 Proceed to Checkout
                             </Button>
