@@ -43,7 +43,11 @@ const AdminDashboardPage = () => {
     // Total counts
     const orderCount = ordersData?.data?.pagination?.total || 0;
     const productCount = productsData?.data?.pagination?.total || 0;
-    const userCount = usersData?.data?.pagination?.total || 0;
+    const userCount = usersData?.data?.length || 0;
+
+    console.log(userCount)
+
+
 
     // Calculate total revenue
     const totalRevenue = orders.reduce((sum: number, order: any) =>
@@ -158,6 +162,9 @@ const AdminDashboardPage = () => {
       monthLabels,
     };
   }, [ordersData, productsData, usersData]);
+
+
+
 
   if (isLoading) {
     return (
