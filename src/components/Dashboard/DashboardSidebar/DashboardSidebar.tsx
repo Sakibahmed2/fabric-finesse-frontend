@@ -97,20 +97,7 @@ export default function DashboardSidebar({
                 Fabric finesse
               </Typography>
             </Box>
-            <Stack direction={"row"} gap={3}>
-              <Badge badgeContent={1} color="primary">
-                <IconButton sx={{ background: "#fffff" }}>
-                  <NotificationsIcon color="action" />
-                </IconButton>
-              </Badge>
-              <Avatar
-                alt={user ? user?.email : "name"}
-                src={
-                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDh8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
-                }
-              />
-              <AccountMenu />
-            </Stack>
+
           </Box>
         </Toolbar>
       </AppBar>

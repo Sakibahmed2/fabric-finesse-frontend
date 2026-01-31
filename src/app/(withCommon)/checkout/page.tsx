@@ -186,6 +186,7 @@ const CheckoutPage = () => {
       total: grandTotal.toFixed(2),
       status: "pending",
       address,
+      phone: formData?.phone,
     };
 
     try {
@@ -231,7 +232,7 @@ const CheckoutPage = () => {
           <FabricForm onSubmit={handleCreateOrder} >
             <Stack direction={'column'} gap={2}>
               <FFInput label="Full Name" name="fullName" required fullWidth />
-              <FFInput label="Email" name="email" required fullWidth />
+              <FFInput label="Phone Number" name="phone" required fullWidth type="tel" />
               <FFInput label="Address" name="address" required fullWidth multiline rows={5} />
             </Stack>
 

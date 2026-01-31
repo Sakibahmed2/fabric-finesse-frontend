@@ -7,12 +7,17 @@ import {
   useGetAllOrdersQuery,
   useUpdateOrderStatusMutation,
 } from "@/redux/api/ordersApi";
-import { Box, Button, FormControl, InputLabel, MenuItem, Pagination, Select, Stack, TextField, Typography, IconButton } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Pagination, Select, Stack, TextField, Typography, IconButton, Chip, Menu } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PendingIcon from "@mui/icons-material/Pending";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 const OrdersPage = () => {
   const router = useRouter();
@@ -22,6 +27,8 @@ const OrdersPage = () => {
   const [limit, setLimit] = useState(10);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [statusMenuAnchor, setStatusMenuAnchor] = useState<null | HTMLElement>(null);
+  const [currentStatusUpdate, setCurrentStatusUpdate] = useState<{ orderId: string, currentStatus: string } | null>(null);
 
   const { data, isLoading, refetch } = useGetAllOrdersQuery({
     search: searchTerm,
@@ -42,11 +49,57 @@ const OrdersPage = () => {
       if (res?.success) {
         refetch();
         toast.success("Order status updated!", { id: toastId });
+        setStatusMenuAnchor(null);
+        setCurrentStatusUpdate(null);
       }
     } catch (err) {
       toast.error("Failed to update status.", { id: toastId });
       console.log(err);
     }
+  };
+
+  const handleStatusMenuClick = (event: React.MouseEvent<HTMLElement>, orderId: string, currentStatus: string) => {
+    setStatusMenuAnchor(event.currentTarget);
+    setCurrentStatusUpdate({ orderId, currentStatus });
+  };
+
+  const handleStatusMenuClose = () => {
+    setStatusMenuAnchor(null);
+    setCurrentStatusUpdate(null);
+  };
+
+  const getStatusConfig = (status: string) => {
+    const configs = {
+      pending: {
+        color: 'warning' as const,
+        icon: <PendingIcon sx={{ fontSize: 16 }} />,
+        label: 'Pending',
+        bgColor: '#fff3cd',
+        textColor: '#856404'
+      },
+      confirmed: {
+        color: 'info' as const,
+        icon: <LocalShippingIcon sx={{ fontSize: 16 }} />,
+        label: 'Confirmed',
+        bgColor: '#d1ecf1',
+        textColor: '#0c5460'
+      },
+      delivered: {
+        color: 'success' as const,
+        icon: <CheckCircleIcon sx={{ fontSize: 16 }} />,
+        label: 'Delivered',
+        bgColor: '#d4edda',
+        textColor: '#155724'
+      },
+      cancelled: {
+        color: 'error' as const,
+        icon: <CancelIcon sx={{ fontSize: 16 }} />,
+        label: 'Cancelled',
+        bgColor: '#f8d7da',
+        textColor: '#721c24'
+      }
+    };
+    return configs[status as keyof typeof configs] || configs.pending;
   };
 
   const handleViewDetails = (order: any) => {
@@ -93,24 +146,87 @@ const OrdersPage = () => {
       flex: 1,
       renderCell: ({ row }) => {
         const ORDER_STATUSES = [
-          "pending",
-          "confirmed",
-          "delivered",
-          "cancelled",
+          { value: "pending", label: "Pending", disabled: false },
+          { value: "confirmed", label: "Confirmed", disabled: row.status === 'cancelled' },
+          { value: "delivered", label: "Delivered", disabled: row.status === 'cancelled' },
+          { value: "cancelled", label: "Cancelled", disabled: row.status === 'delivered' },
         ];
+
+        const statusConfig = getStatusConfig(row.status);
+
         return (
-          <FormControl size="small" fullWidth>
-            <Select
-              value={row.status}
-              onChange={(e) => handleUpdateStatus(row._id, e.target.value)}
-              sx={{ fontWeight: 600, color: row.status === 'pending' ? 'orange' : row.status === 'delivered' ? 'green' : row.status === 'cancelled' ? 'red' : 'primary.main', mt: 0.5 }}
+          <Box>
+            <Chip
+              icon={statusConfig.icon}
+              label={statusConfig.label}
               size="small"
+              onClick={(event) => handleStatusMenuClick(event, row._id, row.status)}
+              onDelete={() => { }} // This makes the chip clickable with arrow
+              deleteIcon={<ExpandMoreIcon />}
+              sx={{
+                backgroundColor: statusConfig.bgColor,
+                color: statusConfig.textColor,
+                border: `1px solid ${statusConfig.textColor}20`,
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: statusConfig.textColor + '10',
+                },
+                '& .MuiChip-deleteIcon': {
+                  color: statusConfig.textColor,
+                  '&:hover': {
+                    color: statusConfig.textColor,
+                  }
+                }
+              }}
+            />
+            <Menu
+              anchorEl={statusMenuAnchor}
+              open={Boolean(statusMenuAnchor) && currentStatusUpdate?.orderId === row._id}
+              onClose={handleStatusMenuClose}
+              PaperProps={{
+                elevation: 8,
+                sx: {
+                  mt: 1,
+                  minWidth: 160,
+                  '& .MuiMenuItem-root': {
+                    px: 2,
+                    py: 1,
+                  }
+                }
+              }}
             >
-              {ORDER_STATUSES.map((status) => (
-                <MenuItem key={status} value={status} sx={{ textTransform: 'capitalize' }}>{status.charAt(0).toUpperCase() + status.slice(1)}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              {ORDER_STATUSES.map((status) => {
+                const config = getStatusConfig(status.value);
+                return (
+                  <MenuItem
+                    key={status.value}
+                    onClick={() => handleUpdateStatus(row._id, status.value)}
+                    disabled={status.disabled || status.value === row.status}
+                    sx={{
+                      opacity: status.disabled ? 0.5 : 1,
+                      backgroundColor: status.value === row.status ? config.bgColor : 'transparent',
+                      '&:hover': {
+                        backgroundColor: status.value === row.status ? config.bgColor : config.bgColor + '30',
+                      }
+                    }}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      {config.icon}
+                      <Typography
+                        sx={{
+                          color: config.textColor,
+                          fontWeight: status.value === row.status ? 600 : 400
+                        }}
+                      >
+                        {config.label}
+                        {status.value === row.status && ' (Current)'}
+                      </Typography>
+                    </Stack>
+                  </MenuItem>
+                );
+              })}
+            </Menu>
+          </Box>
         );
       },
     },

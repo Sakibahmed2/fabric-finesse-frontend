@@ -39,6 +39,7 @@ type TOrder = {
     address: string;
     createdAt: string;
     updatedAt: string;
+    phone?: string;
 };
 
 interface OrderDetailsModalProps extends TModalPageProps {
@@ -106,7 +107,7 @@ const OrderDetailsModal = ({ open, setOpen, order }: OrderDetailsModalProps) => 
                             <strong>Name:</strong> {order.user_id?.name || 'N/A'}
                         </Typography>
                         <Typography variant="body2" mb={0.5}>
-                            <strong>Email:</strong> {order.user_id?.email || 'N/A'}
+                            <strong>Phone:</strong> {order?.phone || 'N/A'}
                         </Typography>
                     </Box>
                 </Box>
