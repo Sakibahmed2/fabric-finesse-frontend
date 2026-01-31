@@ -78,6 +78,8 @@ const ClothCard = ({ product }: { product: TProduct }) => {
             image={product?.images[0]}
             price={product.price}
             salePrice={product.discountPrice}
+            color={product.colors && product.colors.length > 0 ? product.colors[0] : undefined}
+            size={product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined}
             fullWidthButton
           />
         </Box>

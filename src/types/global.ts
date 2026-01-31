@@ -56,3 +56,19 @@ export type TModalPageProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
 };
+
+export type TCoupon = {
+  _id: string;
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  minOrder: number;
+  totalCoupon: number;
+  perUserLimit: number;
+  redemptions: Array<{
+    user: string;
+    usedAt: Date;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+};

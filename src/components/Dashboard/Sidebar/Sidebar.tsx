@@ -9,6 +9,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListIcon from "@mui/icons-material/List";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import CategoryIcon from '@mui/icons-material/Category';
+import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 
 const Sidebar = () => {
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -65,6 +66,11 @@ const Sidebar = () => {
               path="/dashboard/orders"
               title="Orders"
               icon={InventoryIcon}
+            />
+            <ItemsLink
+              path="/dashboard/coupons"
+              title="Coupons"
+              icon={LocalActivityIcon}
             />
           </>
         )}

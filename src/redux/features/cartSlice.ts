@@ -14,10 +14,15 @@ export type TCartItem = {
 
 type TInitialState = {
   carts: TCartItem[];
+  appliedCoupon: {
+    code: string;
+    discount: number;
+  } | null;
 };
 
 const initialState: TInitialState = {
   carts: [],
+  appliedCoupon: null,
 };
 
 export const cartSlice = createSlice({
@@ -133,11 +138,24 @@ export const cartSlice = createSlice({
 
     clearCart: (state) => {
       state.carts = [];
+      state.appliedCoupon = null;
     },
 
     // Keep deleteCart as alias for clearCart for backward compatibility
     deleteCart: (state) => {
       state.carts = [];
+      state.appliedCoupon = null;
+    },
+
+    applyCoupon: (
+      state,
+      action: PayloadAction<{ code: string; discount: number }>,
+    ) => {
+      state.appliedCoupon = action.payload;
+    },
+
+    removeCoupon: (state) => {
+      state.appliedCoupon = null;
     },
   },
 });
@@ -162,6 +180,8 @@ export const {
   removeFromCart,
   clearCart,
   deleteCart,
+  applyCoupon,
+  removeCoupon,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

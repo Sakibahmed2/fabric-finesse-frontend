@@ -2,15 +2,17 @@
 
 import EmptyOrder from "@/components/ui/EmptyOrder/EmptyOrder";
 import FFLoading from "@/components/ui/Loading/FFLoading";
+import OrderDetailsModal from "@/components/Dashboard/Orders/OrderDetailsModal";
 import {
   useGetAllOrdersQuery,
   useUpdateOrderStatusMutation,
 } from "@/redux/api/ordersApi";
-import { Box, Button, FormControl, InputLabel, MenuItem, Pagination, Select, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Pagination, Select, Stack, TextField, Typography, IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const OrdersPage = () => {
   const router = useRouter();
@@ -18,6 +20,8 @@ const OrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const { data, isLoading, refetch } = useGetAllOrdersQuery({
     search: searchTerm,
@@ -43,6 +47,11 @@ const OrdersPage = () => {
       toast.error("Failed to update status.", { id: toastId });
       console.log(err);
     }
+  };
+
+  const handleViewDetails = (order: any) => {
+    setSelectedOrder(order);
+    setDetailsOpen(true);
   };
 
   const columns: GridColDef[] = [
@@ -110,7 +119,7 @@ const OrdersPage = () => {
       headerName: "Total",
       flex: 1,
       renderCell: ({ row }) => (
-        <Typography>৳ {row.total}</Typography>
+        <Typography>৳ {row.total.toFixed(2)}</Typography>
       ),
     },
     {
@@ -122,7 +131,22 @@ const OrdersPage = () => {
         return <Typography my={1.5}>{date}</Typography>;
       },
     },
-    // Action column removed
+    {
+      field: "action",
+      headerName: "Action",
+      flex: 0.7,
+      align: "center",
+      headerAlign: "center",
+      renderCell: ({ row }) => (
+        <IconButton
+          color="primary"
+          onClick={() => handleViewDetails(row)}
+          title="View Details"
+        >
+          <VisibilityIcon />
+        </IconButton>
+      ),
+    },
   ];
 
   return (
@@ -235,6 +259,9 @@ const OrdersPage = () => {
           <FFLoading />
         )}
       </Box>
+
+      {/* Order Details Modal */}
+      <OrderDetailsModal open={detailsOpen} setOpen={setDetailsOpen} order={selectedOrder} />
 
     </Box>
   );

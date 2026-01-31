@@ -3,15 +3,18 @@
 import FabricForm from "@/components/Forms/FabricForm";
 import FFInput from "@/components/Forms/FFInput";
 import { useCreateOrderMutation } from "@/redux/api/ordersApi";
-import { deleteCart } from "@/redux/features/cartSlice";
+import { useValidateCouponMutation } from "@/redux/api/couponApi";
+import { deleteCart, applyCoupon, removeCoupon } from "@/redux/features/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getUserInfo } from "@/services/authService";
-import { Box, Button, Checkbox, Container, Stack, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Container, Stack, Typography, TextField, IconButton, Chip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import CloseIcon from "@mui/icons-material/Close";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 type TCartItem = {
   _id: string;
@@ -26,13 +29,17 @@ type TCartItem = {
 
 const CheckoutPage = () => {
   const [createOrder] = useCreateOrderMutation();
+  const [validateCoupon, { isLoading: isValidating }] = useValidateCouponMutation();
 
   const data: any = useAppSelector((state) => state.cart.carts);
+  const appliedCouponData = useAppSelector((state) => state.cart.appliedCoupon);
   const dispatch = useAppDispatch();
 
   const user: any = getUserInfo();
-
   const router = useRouter();
+
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
 
   const cartData: TCartItem[] = data.reduce(
     (acc: TCartItem[], item: TCartItem) => {
@@ -70,7 +77,10 @@ const CheckoutPage = () => {
   const subtotal = totalAmount;
   // Shipping state: 60 for inside Dhaka, 120 for outside
   const [shipping, setShipping] = useState(60);
-  const grandTotal = subtotal + shipping;
+
+  // Calculate discount
+  const discount = appliedCouponData?.discount || 0;
+  const grandTotal = subtotal + shipping - discount;
 
   const columns: GridColDef[] = [
     {
@@ -106,6 +116,51 @@ const CheckoutPage = () => {
     { field: "quantity", headerName: "Quantity", flex: 1 },
   ];
 
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    if (!user?.userId) {
+      toast.error("Please login to apply coupon");
+      return;
+    }
+
+    const toastId = toast.loading("Validating coupon...");
+    setCouponError("");
+
+    try {
+      const res = await validateCoupon({
+        code: couponCode.trim(),
+        userId: user.userId,
+        orderAmount: subtotal,
+      }).unwrap();
+
+      if (res?.data?.isValid) {
+        dispatch(applyCoupon({
+          code: couponCode.trim().toUpperCase(),
+          discount: res.data.discount || 0,
+        }));
+        toast.success("Coupon applied successfully!", { id: toastId });
+        setCouponCode("");
+      } else {
+        setCouponError(res?.data?.message || "Invalid coupon");
+        toast.error(res?.data?.message || "Invalid coupon", { id: toastId });
+      }
+    } catch (err: any) {
+      const errorMessage = err?.data?.message || "Failed to apply coupon";
+      setCouponError(errorMessage);
+      toast.error(errorMessage, { id: toastId });
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    dispatch(removeCoupon());
+    setCouponCode("");
+    setCouponError("");
+    toast.success("Coupon removed");
+  };
 
   const handleCreateOrder = async (formData?: any) => {
     const toastId = toast.loading("Creating...");
@@ -126,6 +181,8 @@ const CheckoutPage = () => {
       })),
       subtotal,
       delivery_fee: shipping,
+      discount: discount,
+      coupon_code: appliedCouponData?.code || null,
       total: grandTotal.toFixed(2),
       status: "pending",
       address,
@@ -216,6 +273,52 @@ const CheckoutPage = () => {
             height: 'fit-content',
           }}
         >
+
+          {/* Coupon Section */}
+          <Box sx={{ mb: 2 }}>
+            {!appliedCouponData ? (
+              <Box>
+                <Typography variant="subtitle2" fontWeight={600} mb={1}>
+                  Have a coupon?
+                </Typography>
+                <Stack direction="row" spacing={1}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    placeholder="Enter coupon code"
+                    value={couponCode}
+                    onChange={(e) => {
+                      setCouponCode(e.target.value.toUpperCase());
+                      setCouponError("");
+                    }}
+                    error={!!couponError}
+                    helperText={couponError}
+                    disabled={isValidating}
+                  />
+                  <Button
+                    variant="outlined"
+                    onClick={handleApplyCoupon}
+                    disabled={isValidating || !couponCode.trim()}
+                    sx={{ minWidth: '100px' }}
+                  >
+                    Apply
+                  </Button>
+                </Stack>
+              </Box>
+            ) : (
+              <Box>
+                <Chip
+                  icon={<LocalOfferIcon />}
+                  label={`${appliedCouponData.code} - ৳${appliedCouponData.discount.toFixed(2)} OFF`}
+                  onDelete={handleRemoveCoupon}
+                  color="success"
+                  sx={{ width: '100%', justifyContent: 'space-between' }}
+                />
+              </Box>
+            )}
+            <Box sx={{ borderTop: '1px solid #eee', my: 2 }} />
+          </Box>
+
           <Typography variant="h6" fontWeight={600} mb={2}>
             Order Summary
           </Typography>
@@ -250,6 +353,9 @@ const CheckoutPage = () => {
                 <Box sx={{ borderTop: '1px solid #eee', my: 2 }} />
               </Box>
               <Box sx={{ flex: 1 }} />
+
+
+
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography>Subtotal</Typography>
@@ -259,6 +365,12 @@ const CheckoutPage = () => {
                   <Typography>Shipping</Typography>
                   <Typography>৳ {shipping.toFixed(2)}</Typography>
                 </Box>
+                {discount > 0 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, color: 'success.main' }}>
+                    <Typography>Discount</Typography>
+                    <Typography>- ৳ {discount.toFixed(2)}</Typography>
+                  </Box>
+                )}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, mt: 2 }}>
                   <Typography>Total</Typography>
                   <Typography>৳ {grandTotal.toFixed(2)}</Typography>
@@ -269,7 +381,7 @@ const CheckoutPage = () => {
         </Box>
       </Stack>
 
-    </Container >
+    </Container>
   );
 };
 

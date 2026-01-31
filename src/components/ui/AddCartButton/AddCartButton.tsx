@@ -41,6 +41,8 @@ const AddCartButton = ({
   const user: any = getUserInfo();
 
   const handleAddToCart = () => {
+    if (!_id) return;
+    
     let cartProps = {
       _id,
       title,
