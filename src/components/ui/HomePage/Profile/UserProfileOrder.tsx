@@ -25,7 +25,7 @@ const UserProfileOrder = () => {
                 <Typography color="text.secondary">No orders found.</Typography>
             ) : (
                 orderData?.map((order: any) => (
-                    <Box key={order._id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 1 }}>
+                    <Box key={order._id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 1, bgcolor: '#fafafa', boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
                         <Typography variant="subtitle2" mb={1}>Order ID: {order.order_id}</Typography>
                         <Typography variant="body2" mb={1}>Placed: {new Date(order.createdAt).toLocaleDateString()}</Typography>
                         <Typography variant="body2" mb={1}>Status: <Chip label={order.status} color={order.status === 'pending' ? 'warning' : 'success'} size="small" /></Typography>

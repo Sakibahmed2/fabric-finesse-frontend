@@ -16,22 +16,11 @@ import { toast } from "sonner";
 import CloseIcon from "@mui/icons-material/Close";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
-type TCartItem = {
-  _id: string;
-  title: string;
-  image: string;
-  price: number;
-  discountPrice?: number | null;
-  quantity?: number | undefined;
-  color?: string;
-  size?: string;
-};
-
 const CheckoutPage = () => {
   const [createOrder] = useCreateOrderMutation();
   const [validateCoupon, { isLoading: isValidating }] = useValidateCouponMutation();
 
-  const data: any = useAppSelector((state) => state.cart.carts);
+  const carts = useAppSelector((state) => state.cart.carts);
   const appliedCouponData = useAppSelector((state) => state.cart.appliedCoupon);
   const dispatch = useAppDispatch();
 
@@ -41,37 +30,12 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
 
-  const cartData: TCartItem[] = data.reduce(
-    (acc: TCartItem[], item: TCartItem) => {
-      const existingItemIndex = acc.findIndex(
-        (cartItem) => cartItem._id === item._id
-      );
-
-      if (existingItemIndex !== -1) {
-        const existingItem = acc[existingItemIndex];
-        if (existingItem.quantity !== undefined) {
-          existingItem.quantity++;
-        } else {
-          existingItem.quantity = 2;
-        }
-      } else {
-        acc.push({ ...item, quantity: 1 });
-      }
-
-      return acc;
-    },
-    []
-  );
+  // Cart items already have proper quantity from the cart slice
+  const cartData = carts;
 
   const totalAmount = cartData.reduce((total, item) => {
-    const itemPrice =
-      item.discountPrice !== undefined ? item.discountPrice : item.price;
-    if (itemPrice !== null) {
-      const itemTotal = itemPrice * (item.quantity || 1);
-      return total + itemTotal;
-    }
-
-    return total;
+    const itemPrice = item.salePrice ?? item.price;
+    return total + itemPrice * item.quantity;
   }, 0);
 
   const subtotal = totalAmount;
@@ -347,7 +311,7 @@ const CheckoutPage = () => {
                       </Box>
                     </Box>
                     <Typography fontWeight={600}>
-                      ৳ {(item.discountPrice ?? item.price) * (item.quantity || 1)}
+                      ৳ {(item.salePrice ?? item.price) * item.quantity}
                     </Typography>
                   </Box>
                 ))}
