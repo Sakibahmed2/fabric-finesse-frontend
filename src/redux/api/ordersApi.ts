@@ -31,6 +31,12 @@ const orderApi = baseApi.injectEndpoints({
         body: { status },
       }),
     }),
+    initPayment: build.mutation({
+      query: (orderId: string) => ({
+        url: `/payments/init/${orderId}`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -39,4 +45,5 @@ export const {
   useGetUserOrderQuery,
   useGetAllOrdersQuery,
   useUpdateOrderStatusMutation,
+  useInitPaymentMutation,
 } = orderApi;

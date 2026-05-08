@@ -36,6 +36,7 @@ type TOrder = {
     coupon_code?: string;
     total: number;
     status: string;
+    payment_status?: string;
     address: string;
     createdAt: string;
     updatedAt: string;
@@ -74,6 +75,38 @@ const OrderDetailsModal = ({ open, setOpen, order }: OrderDetailsModalProps) => 
         });
     };
 
+    const getPaymentColor = (status: string) => {
+        const normalizedStatus = (status || 'unpaid').toLowerCase();
+
+        switch (normalizedStatus) {
+            case 'paid':
+                return 'success';
+            case 'failed':
+            case 'cancelled':
+                return 'error';
+            case 'pending':
+            default:
+                return 'warning';
+        }
+    };
+
+    const paymentStatusLabel = (status?: string) => {
+        const normalizedStatus = (status || 'unpaid').toLowerCase();
+
+        switch (normalizedStatus) {
+            case 'paid':
+                return 'Paid';
+            case 'failed':
+                return 'Failed';
+            case 'cancelled':
+                return 'Cancelled';
+            case 'pending':
+                return 'Pending';
+            default:
+                return 'Unpaid';
+        }
+    };
+
     return (
         <FFModal open={open} setOpen={setOpen} title="Order Details" maxWidth="lg" fullWidth>
             <Box>
@@ -88,11 +121,19 @@ const OrderDetailsModal = ({ open, setOpen, order }: OrderDetailsModalProps) => 
                             {formatDate(order.createdAt)}
                         </Typography>
                     </Box>
-                    <Chip
-                        label={order.status.toUpperCase()}
-                        color={getStatusColor(order.status)}
-                        sx={{ fontWeight: 600 }}
-                    />
+                    <Stack direction="row" spacing={1} alignItems="center">
+                        <Chip
+                            label={order.status.toUpperCase()}
+                            color={getStatusColor(order.status)}
+                            sx={{ fontWeight: 600 }}
+                        />
+                        <Chip
+                            label={`Payment: ${paymentStatusLabel(order.payment_status)}`}
+                            color={getPaymentColor(order.payment_status || 'unpaid')}
+                            size="small"
+                            sx={{ fontWeight: 600 }}
+                        />
+                    </Stack>
                 </Stack>
 
                 <Divider sx={{ mb: 3 }} />

@@ -5,7 +5,7 @@ import ClothCard from "../../ClothCard";
 
 const FlashSale = async () => {
   const res = await fetch(
-    `http://localhost:5000/api/v1/products`,
+    `https://fabric-finesse-backend-v2.onrender.com/api/v1/products`,
     {
       next: {
         revalidate: 30,

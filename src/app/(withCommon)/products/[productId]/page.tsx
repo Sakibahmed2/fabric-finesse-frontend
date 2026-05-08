@@ -8,7 +8,7 @@ type TProps = {
   };
 };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Fetch product data - reusable function
 async function getProduct(productId: string): Promise<TProduct | null> {

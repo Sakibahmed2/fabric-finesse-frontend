@@ -102,6 +102,23 @@ const OrdersPage = () => {
     return configs[status as keyof typeof configs] || configs.pending;
   };
 
+  const getPaymentStatusConfig = (status: string) => {
+    const normalizedStatus = (status || "unpaid").toLowerCase();
+
+    switch (normalizedStatus) {
+      case "paid":
+        return { color: "success" as const, label: "Paid" };
+      case "cancelled":
+        return { color: "error" as const, label: "Cancelled" };
+      case "failed":
+        return { color: "error" as const, label: "Failed" };
+      case "pending":
+        return { color: "warning" as const, label: "Pending" };
+      default:
+        return { color: "warning" as const, label: "Unpaid" };
+    }
+  };
+
   const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
     setDetailsOpen(true);
@@ -227,6 +244,24 @@ const OrdersPage = () => {
               })}
             </Menu>
           </Box>
+        );
+      },
+    },
+    {
+      field: "payment_status",
+      headerName: "Payment",
+      flex: 1,
+      renderCell: ({ row }) => {
+        const paymentStatus = row.payment_status || "unpaid";
+        const paymentConfig = getPaymentStatusConfig(paymentStatus);
+
+        return (
+          <Chip
+            label={paymentConfig.label}
+            color={paymentConfig.color}
+            size="small"
+            sx={{ textTransform: "capitalize" }}
+          />
         );
       },
     },

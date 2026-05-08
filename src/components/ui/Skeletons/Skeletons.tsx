@@ -255,21 +255,3 @@ export const FlashSaleSkeleton = () => (
         </Box>
     </Box>
 );
-
-export default {
-    ProductCardSkeleton,
-    ProductGridSkeleton,
-    ProductDetailsSkeleton,
-    CategoryCardSkeleton,
-    CategoriesGridSkeleton,
-    TableRowSkeleton,
-    TableSkeleton,
-    StatsCardSkeleton,
-    StatsGridSkeleton,
-    ProfileSkeleton,
-    HeroSkeleton,
-    OrderCardSkeleton,
-    OrdersListSkeleton,
-    FlashSaleItemSkeleton,
-    FlashSaleSkeleton,
-};

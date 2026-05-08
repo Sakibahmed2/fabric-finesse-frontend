@@ -5,6 +5,7 @@ import FFInput from "@/components/Forms/FFInput";
 import FabricForm from "@/components/Forms/FabricForm";
 import { useLoginUserMutation } from "@/redux/api/authApi";
 import { storeUserInfo } from "@/services/authService";
+import { loginValidationSchema } from "@/validations/login.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import Image from "next/image";
@@ -14,17 +15,7 @@ import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-// Validation schema for login form
-export const loginValidationSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please provide a valid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(6, "Password must be at least 6 characters"),
-});
+
 
 type TLoginFormValues = z.infer<typeof loginValidationSchema>;
 

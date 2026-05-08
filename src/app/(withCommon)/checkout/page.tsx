@@ -2,22 +2,21 @@
 
 import FabricForm from "@/components/Forms/FabricForm";
 import FFInput from "@/components/Forms/FFInput";
-import { useCreateOrderMutation } from "@/redux/api/ordersApi";
+import { useCreateOrderMutation, useInitPaymentMutation } from "@/redux/api/ordersApi";
 import { useValidateCouponMutation } from "@/redux/api/couponApi";
-import { deleteCart, applyCoupon, removeCoupon } from "@/redux/features/cartSlice";
+import { applyCoupon, removeCoupon } from "@/redux/features/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getUserInfo } from "@/services/authService";
-import { Box, Button, Checkbox, Container, Stack, Typography, TextField, IconButton, Chip } from "@mui/material";
+import { Alert, Box, Button, Checkbox, Container, Stack, Typography, TextField, Chip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import CloseIcon from "@mui/icons-material/Close";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 const CheckoutPage = () => {
   const [createOrder] = useCreateOrderMutation();
+  const [initPayment] = useInitPaymentMutation();
   const [validateCoupon, { isLoading: isValidating }] = useValidateCouponMutation();
 
   const carts = useAppSelector((state) => state.cart.carts);
@@ -25,10 +24,11 @@ const CheckoutPage = () => {
   const dispatch = useAppDispatch();
 
   const user: any = getUserInfo();
-  const router = useRouter();
 
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [pendingPaymentOrderId, setPendingPaymentOrderId] = useState<string | null>(null);
 
   // Cart items already have proper quantity from the cart slice
   const cartData = carts;
@@ -126,8 +126,58 @@ const CheckoutPage = () => {
     toast.success("Coupon removed");
   };
 
+  const extractOrderId = (orderResponse: any) => {
+    return (
+      orderResponse?.data?._id ||
+      orderResponse?.data?.id ||
+      orderResponse?.order?._id ||
+      orderResponse?._id ||
+      null
+    );
+  };
+
+  const redirectToPaymentGateway = async (orderId: string) => {
+    const paymentResponse: any = await initPayment(orderId).unwrap();
+    const gatewayUrl = paymentResponse?.data?.gatewayUrl;
+
+    if (!paymentResponse?.success || !gatewayUrl) {
+      throw new Error(paymentResponse?.message || "SSLCommerz init failed");
+    }
+
+    window.location.href = gatewayUrl;
+  };
+
+  const handleRetryPayment = async () => {
+    if (!pendingPaymentOrderId) return;
+
+    const toastId = toast.loading("Retrying payment initialization...");
+    setIsPlacingOrder(true);
+
+    try {
+      await redirectToPaymentGateway(pendingPaymentOrderId);
+      toast.success("Redirecting to payment gateway...", { id: toastId });
+    } catch (error: any) {
+      const message = error?.data?.message || error?.message || "Unable to initialize payment";
+      toast.error(message, { id: toastId });
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  };
+
   const handleCreateOrder = async (formData?: any) => {
-    const toastId = toast.loading("Creating...");
+    if (!user?.userId) {
+      toast.error("Please login to place order");
+      return;
+    }
+
+    if (cartData.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    const toastId = toast.loading("Creating order...");
+    setIsPlacingOrder(true);
+    setPendingPaymentOrderId(null);
 
     // Generate a unique order_id (for demo, use timestamp)
     const order_id = `ORD-${Date.now()}`;
@@ -154,14 +204,23 @@ const CheckoutPage = () => {
     };
 
     try {
-      const res: any = await createOrder(newOrder);
-      if (res?.data?.success) {
-        toast.success(res.data?.message, { id: toastId });
-        dispatch(deleteCart());
-        router.push("/");
+      const orderResponse: any = await createOrder(newOrder).unwrap();
+      const orderId = extractOrderId(orderResponse);
+
+      if (!orderId) {
+        throw new Error("Order created but order id was not returned");
       }
-    } catch (err) {
-      console.log(err);
+
+      setPendingPaymentOrderId(orderId);
+      toast.loading("Initializing SSLCommerz payment...", { id: toastId });
+
+      await redirectToPaymentGateway(orderId);
+      toast.success("Redirecting to payment gateway...", { id: toastId });
+    } catch (err: any) {
+      const errorMessage = err?.data?.message || err?.message || "Failed to place order";
+      toast.error(errorMessage, { id: toastId });
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
@@ -218,10 +277,32 @@ const CheckoutPage = () => {
               <span className="text-[16px] text-black">Outside Dhaka-120TK</span>
             </Stack>
 
-            <Button variant="contained" color="primary" sx={{ mt: 3 }} fullWidth type="submit">
-              Place Order
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3 }}
+              fullWidth
+              type="submit"
+              disabled={isPlacingOrder || cartData.length === 0}
+            >
+              {isPlacingOrder ? "Processing..." : "Place Order"}
             </Button>
           </FabricForm>
+
+          {pendingPaymentOrderId && (
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              Payment initialization did not complete. You can retry payment without creating a new order.
+              <Button
+                size="small"
+                sx={{ ml: 2 }}
+                variant="outlined"
+                onClick={handleRetryPayment}
+                disabled={isPlacingOrder}
+              >
+                Retry Payment
+              </Button>
+            </Alert>
+          )}
         </Box>
 
         {/* Order summary */}

@@ -1,9 +1,9 @@
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import "./globals.css";
 import Providers from "@/lib/providers/Providers";
 import { Toaster } from "sonner";
+import "./globals.css";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={poppins.className}>
         <Providers>
           <AppRouterCacheProvider>
-            <Toaster richColors position="top-center" />
+            <Toaster richColors position="bottom-center" />
             {children}
           </AppRouterCacheProvider>
         </Providers>
